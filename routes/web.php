@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'dashboard')->name('dashboard');
 
 Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register', [AuthController::class, 'storeRegister'])->name('register.store');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'storeLogin'])->name('login.store');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::resource('products', ProductController::class)->only(['index', 'show']);
 Route::resource('categories', CategoryController::class)->only(['index', 'show']);
