@@ -12,7 +12,13 @@ use App\Http\Controllers\Reviews\ReviewController;
 use App\Http\Controllers\Reviews\ReviewReplyController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'dashboard')->name('dashboard');
+route::get('/', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+// Route::get('/', function () {
+//     return 'HALO DANIEL';
+// });
 
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
