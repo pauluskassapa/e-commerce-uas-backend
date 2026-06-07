@@ -17,8 +17,8 @@ Route::view('/', 'dashboard')->name('dashboard');
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 
-Route::resource('products', ProductController::class)->only(['index', 'show']);
-Route::resource('categories', CategoryController::class)->only(['index', 'show']);
+Route::resource('products', ProductController::class);
+Route::resource('categories', CategoryController::class);
 Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
 Route::resource('review-replies', ReviewReplyController::class)->only(['index', 'show']);
 Route::resource('carts', CartController::class)->only(['index', 'show']);
