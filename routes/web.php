@@ -12,7 +12,7 @@ use App\Http\Controllers\Reviews\ReviewController;
 use App\Http\Controllers\Reviews\ReviewReplyController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'dashboard')->name('dashboard');
+Route::redirect('/', '/products')->name('dashboard');
 
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
