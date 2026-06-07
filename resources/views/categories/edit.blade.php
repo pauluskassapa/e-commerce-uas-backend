@@ -2,6 +2,16 @@
 
 @section('content')
     <h2>Edit Kategori</h2>
+    @if ($errors->any())
+    <div>
+        <strong>Data belum valid:</strong>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
     <form method="post" action="{{ route('categories.update', $category) }}">
         @csrf
