@@ -2,7 +2,44 @@
 
 @section('content')
     <h2>Products</h2>
-    <p>TODO: isi fitur list, search, filter kategori, rentang harga, tambah, update, dan hapus produk.</p>
+
+    <a href="{{ route('products.create') }}">Tambah Product</a>
+
+    @if (session('success'))
+        <p>{{ session('success') }}</p>
+    @endif
+
+    <h3>Filter Produk</h3>
+
+    <form method="get" action="{{ route('products.index') }}">
+        <label>Search
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama produk">
+        </label>
+
+        <label>Kategori
+            <select name="category_id">
+                <option value="">Semua kategori</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+        </label>
+
+        <label>Harga Min
+            <input type="number" name="min_price" value="{{ request('min_price') }}">
+        </label>
+
+        <label>Harga Max
+            <input type="number" name="max_price" value="{{ request('max_price') }}">
+        </label>
+
+        <button type="submit">Filter</button>
+        <a href="{{ route('products.index') }}">Reset</a>
+    </form>
+
+    <br>
 
     <table border="1" cellpadding="6">
         <tr>
@@ -11,17 +48,35 @@
             <th>Category</th>
             <th>Price</th>
             <th>Stock</th>
+            <th>Status</th>
+            <th>Action</th>
         </tr>
+
         @forelse ($products as $product)
             <tr>
                 <td>{{ $product->id }}</td>
                 <td>{{ $product->name }}</td>
                 <td>{{ $product->category?->name ?? '-' }}</td>
-                <td>{{ $product->price }}</td>
+                <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
                 <td>{{ $product->stock }}</td>
+                <td>{{ $product->is_active ? 'Aktif' : 'Nonaktif' }}</td>
+                <td>
+                    <a href="{{ route('products.show', $product) }}">Detail</a>
+                    <a href="{{ route('products.edit', $product) }}">Edit</a>
+
+                    <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
+                        @csrf
+                        @method('delete')
+                        <button type="submit" onclick="return confirm('Yakin mau hapus produk ini?')">
+                            Hapus
+                        </button>
+                    </form>
+                </td>
             </tr>
         @empty
-            <tr><td colspan="5">Belum ada data produk.</td></tr>
+            <tr>
+                <td colspan="7">Belum ada data produk.</td>
+            </tr>
         @endforelse
     </table>
 @endsection
