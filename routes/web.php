@@ -12,7 +12,9 @@ use App\Http\Controllers\Reviews\ReviewController;
 use App\Http\Controllers\Reviews\ReviewReplyController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/products')->name('dashboard');
+Route::get('/', function () {
+    return view('dashboard');
+})->name('dashboard');
 
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/register', [AuthController::class, 'storeRegister'])->name('register.store');
@@ -20,8 +22,20 @@ Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'storeLogin'])->name('login.store');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::resource('products', ProductController::class);
-Route::resource('categories', CategoryController::class);
+Route::post('/cart/add/{product}', [CartController::class, 'add'])
+    ->name('cart.add');
+
+Route::post('/cart/increase/{product}', [CartController::class, 'increase'])
+    ->name('cart.increase');
+
+Route::post('/cart/decrease/{product}', [CartController::class, 'decrease'])
+    ->name('cart.decrease');
+
+Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])
+    ->name('cart.remove');
+
+Route::resource('products', ProductController::class)->only(['index', 'show']);
+Route::resource('categories', CategoryController::class)->only(['index', 'show']);
 Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
 Route::resource('review-replies', ReviewReplyController::class)->only(['index', 'show']);
 Route::resource('carts', CartController::class)->only(['index', 'show']);

@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'E-Commerce MVC' }}</title>
+    <title>{{ $title ?? 'Pendekar Store' }}</title>
 </head>
 <body>
     <header>
-        <h1>E-Commerce MVC</h1>
+        <h1>PENDEKAR STORE</h1>
         <nav>
-            <a href="{{ route('dashboard') }}">Dashboard</a>
+            <a href="{{ route('dashboard') }}">HOME</a>
             <a href="{{ route('products.index') }}">Products</a>
             <a href="{{ route('categories.index') }}">Categories</a>
             <a href="{{ route('reviews.index') }}">Reviews</a>
