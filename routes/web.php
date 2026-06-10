@@ -23,6 +23,20 @@ route::get('/', function () {
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 
+
+Route::post('/cart/add/{product}', [CartController::class, 'add'])
+    ->name('cart.add');
+
+Route::post('/cart/increase/{product}', [CartController::class, 'increase'])
+    ->name('cart.increase');
+
+Route::post('/cart/decrease/{product}', [CartController::class, 'decrease'])
+    ->name('cart.decrease');
+
+Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])
+    ->name('cart.remove');
+
+
 Route::resource('products', ProductController::class)->only(['index', 'show']);
 Route::resource('categories', CategoryController::class)->only(['index', 'show']);
 Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
