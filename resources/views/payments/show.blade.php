@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Detail Payment</h1>
+    <h2>Detail Payment</h2>
 
     <table border="1" cellpadding="6">
         <tr>
@@ -20,7 +20,7 @@
         </tr>
 
         <tr>
-            <th>Payment Method</th>
+            <th>Method</th>
             <td>{{ $payment->method?->name ?? '-' }}</td>
         </tr>
 
@@ -36,17 +36,12 @@
 
         <tr>
             <th>Paid At</th>
-            <td>{{ $payment->paid_at?->format('d/m/Y H:i') ?? '-' }}</td>
+            <td>{{ $payment->paid_at ?? '-' }}</td>
         </tr>
 
         <tr>
             <th>Notes</th>
             <td>{{ $payment->notes ?? '-' }}</td>
-        </tr>
-
-        <tr>
-            <th>Created At</th>
-            <td>{{ $payment->created_at?->format('d/m/Y H:i') }}</td>
         </tr>
     </table>
 
