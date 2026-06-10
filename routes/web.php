@@ -12,24 +12,15 @@ use App\Http\Controllers\Reviews\ReviewController;
 use App\Http\Controllers\Reviews\ReviewReplyController;
 use Illuminate\Support\Facades\Route;
 
-<<<<<<< HEAD
-route::get('/', function () {
+Route::get('/', function () {
     return view('dashboard');
 })->name('dashboard');
-
-// Route::get('/', function () {
-//     return 'HALO DANIEL';
-// });
-=======
-Route::redirect('/', '/products')->name('dashboard');
->>>>>>> e9ab497a80e977ff39a0b3bc77286c36c38bdfa9
 
 Route::get('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/register', [AuthController::class, 'storeRegister'])->name('register.store');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'storeLogin'])->name('login.store');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
 
 Route::post('/cart/add/{product}', [CartController::class, 'add'])
     ->name('cart.add');
@@ -43,9 +34,9 @@ Route::post('/cart/decrease/{product}', [CartController::class, 'decrease'])
 Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])
     ->name('cart.remove');
 
-
 Route::resource('products', ProductController::class);
 Route::resource('categories', CategoryController::class);
+
 Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
 Route::resource('review-replies', ReviewReplyController::class)->only(['index', 'show']);
 Route::resource('carts', CartController::class)->only(['index', 'show']);
