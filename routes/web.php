@@ -34,8 +34,8 @@ Route::post('/cart/decrease/{product}', [CartController::class, 'decrease'])
 Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])
     ->name('cart.remove');
 
-Route::resource('products', ProductController::class)->only(['index', 'show']);
-Route::resource('categories', CategoryController::class)->only(['index', 'show']);
+Route::resource('products', ProductController::class);
+Route::resource('categories', CategoryController::class);
 Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
 Route::resource('review-replies', ReviewReplyController::class)->only(['index', 'show']);
 Route::resource('carts', CartController::class)->only(['index', 'show']);
