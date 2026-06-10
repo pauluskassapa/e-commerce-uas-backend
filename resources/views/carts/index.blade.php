@@ -1,25 +1,85 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>Carts</h2>
-    <p>TODO: isi fitur tambah produk ke cart, lihat cart per user, update quantity, dan remove item.</p>
+<h2>Keranjang Belanja (Data Dummy)</h2>
 
-    <table border="1" cellpadding="6">
-        <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Status</th>
-            <th>Total Items</th>
-        </tr>
-        @forelse ($carts as $cart)
+@php
+    $dummyCarts = [
+        (object)[
+            'id' => 1,
+            'items' => [
+                (object)[
+                    'product' => (object)[
+                        'id' => 1,
+                        'name' => 'Laptop Gaming',
+                        'price' => 15000000
+                    ],
+                    'quantity' => 1
+                ],
+                (object)[
+                    'product' => (object)[
+                        'id' => 2,
+                        'name' => 'Mouse Wireless',
+                        'price' => 250000
+                    ],
+                    'quantity' => 2
+                ],
+                (object)[
+                    'product' => (object)[
+                        'id' => 3,
+                        'name' => 'Keyboard Mechanical',
+                        'price' => 750000
+                    ],
+                    'quantity' => 1
+                ]
+            ]
+        ]
+    ];
+@endphp
+
+@foreach($dummyCarts as $cart)
+
+    <h3>Cart #{{ $cart->id }}</h3>
+
+    <table border="1" cellpadding="8">
+        <thead>
             <tr>
-                <td>{{ $cart->id }}</td>
-                <td>{{ $cart->user?->name ?? '-' }}</td>
-                <td>{{ $cart->status }}</td>
-                <td>{{ $cart->items->count() }}</td>
+                <th>Produk</th>
+                <th>Harga</th>
+                <th>Quantity</th>
+                <th>Aksi</th>
             </tr>
-        @empty
-            <tr><td colspan="4">Belum ada data cart.</td></tr>
-        @endforelse
+        </thead>
+
+        <tbody>
+
+            @foreach($cart->items as $item)
+
+                <tr>
+                    <td>{{ $item->product->name }}</td>
+
+                    <td>
+                        Rp {{ number_format($item->product->price) }}
+                    </td>
+
+                    <td>
+                        <button>-</button>
+
+                        {{ $item->quantity }}
+
+                        <button>+</button>
+                    </td>
+
+                    <td>
+                        <button>Hapus</button>
+                    </td>
+                </tr>
+
+            @endforeach
+
+        </tbody>
     </table>
+
+@endforeach
+
 @endsection

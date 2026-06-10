@@ -50,20 +50,60 @@ class DatabaseSeeder extends Seeder
             'role' => 'seller',
         ]);
 
-        $category = Category::create([
-            'name' => 'Elektronik',
-            'slug' => 'elektronik',
-            'description' => 'Kategori contoh untuk katalog produk.',
-        ]);
+        $categories = collect([
+    [
+        'name' => 'Baju',
+        'slug' => 'baju',
+        'description' => 'Kategori untuk produk pakaian.',
+    ],
+    [
+        'name' => 'Elektronik',
+        'slug' => 'elektronik',
+        'description' => 'Kategori untuk produk elektronik.',
+    ],
+    [
+        'name' => 'Makanan & Minuman',
+        'slug' => 'makanan-minuman',
+        'description' => 'Kategori untuk produk makanan dan minuman.',
+    ],
+    [
+        'name' => 'Aksesoris',
+        'slug' => 'aksesoris',
+        'description' => 'Kategori untuk aksesoris fashion dan gadget.',
+    ],
+    [
+        'name' => 'Peralatan Rumah',
+        'slug' => 'peralatan-rumah',
+        'description' => 'Kategori untuk kebutuhan rumah tangga.',
+    ],
+])->map(fn ($category) => Category::create($category));
 
-        $product = Product::create([
-            'category_id' => $category->id,
-            'name' => 'Keyboard Mechanical',
-            'slug' => 'keyboard-mechanical',
-            'description' => 'Produk contoh untuk scaffold catalog.',
-            'price' => 350000,
-            'stock' => 10,
-        ]);
+$product = Product::create([
+    'category_id' => $categories->firstWhere('slug', 'baju')->id,
+    'name' => 'Kaos Polos Hitam',
+    'slug' => 'kaos-polos-hitam',
+    'description' => 'Produk contoh untuk kategori baju.',
+    'price' => 75000,
+    'stock' => 25,
+]);
+
+Product::create([
+    'category_id' => $categories->firstWhere('slug', 'elektronik')->id,
+    'name' => 'Keyboard Mechanical',
+    'slug' => 'keyboard-mechanical',
+    'description' => 'Produk contoh untuk kategori elektronik.',
+    'price' => 350000,
+    'stock' => 10,
+]);
+
+Product::create([
+    'category_id' => $categories->firstWhere('slug', 'makanan-minuman')->id,
+    'name' => 'Kopi Susu Botol',
+    'slug' => 'kopi-susu-botol',
+    'description' => 'Produk contoh untuk kategori makanan dan minuman.',
+    'price' => 18000,
+    'stock' => 50,
+]);
 
         $review = Review::create([
             'user_id' => $buyer->id,
