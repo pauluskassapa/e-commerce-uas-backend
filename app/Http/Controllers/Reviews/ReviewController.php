@@ -66,13 +66,21 @@ class ReviewController extends Controller
     public function update(Request $request, Review $review): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['sometimes', 'required', 'integer', 'exists:users,id'],
-            'product_id' => ['sometimes', 'required', 'integer', 'exists:products,id'],
+            'user_id' => ['required', 'integer', 'exists:users,id'],
             'rating' => ['sometimes', 'required', 'integer', 'min:1', 'max:5'],
             'comment' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ]);
 
-        $review->update($validated);
+        if ((int) $validated['user_id'] !== $review->user_id) {
+            return response()->json([
+                'message' => 'User hanya bisa mengubah review miliknya sendiri.',
+            ], 403);
+        }
+
+        $review->update([
+            'rating' => $validated['rating'] ?? $review->rating,
+            'comment' => array_key_exists('comment', $validated) ? $validated['comment'] : $review->comment,
+        ]);
 
         return response()->json([
             'message' => 'Review berhasil diperbarui.',
