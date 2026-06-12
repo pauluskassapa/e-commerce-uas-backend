@@ -63,7 +63,14 @@
                 <td>
                     <a href="{{ route('products.show', $product) }}">Detail</a>
                     <a href="{{ route('products.edit', $product) }}">Edit</a>
-
+                    @auth
+                    <form method="post" action="{{ route('cart.add', $product) }}" style="display:inline">
+                     @csrf
+                    <button type="submit">Tambah ke Cart</button>
+                    </form>
+                    @else
+                    <a href="{{ route('login') }}">Login untuk tambah cart</a>
+                    @endauth
                     <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
                         @csrf
                         @method('delete')
