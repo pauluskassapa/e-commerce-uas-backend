@@ -88,8 +88,18 @@ class ReviewController extends Controller
         ]);
     }
 
-    public function destroy(Review $review): JsonResponse
+    public function destroy(Request $request, Review $review): JsonResponse
     {
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+        ]);
+
+        if ((int) $validated['user_id'] !== $review->user_id) {
+            return response()->json([
+                'message' => 'User hanya bisa menghapus review miliknya sendiri.',
+            ], 403);
+        }
+
         $review->delete();
 
         return response()->json([

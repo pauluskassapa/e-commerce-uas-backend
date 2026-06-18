@@ -65,12 +65,19 @@ class ReviewReplyController extends Controller
     public function update(Request $request, ReviewReply $reviewReply): JsonResponse
     {
         $validated = $request->validate([
-            'review_id' => ['sometimes', 'required', 'integer', 'exists:reviews,id'],
-            'user_id' => ['sometimes', 'required', 'integer', 'exists:users,id'],
+            'user_id' => ['required', 'integer', 'exists:users,id'],
             'message' => ['sometimes', 'required', 'string', 'max:1000'],
         ]);
 
-        $reviewReply->update($validated);
+        if ((int) $validated['user_id'] !== $reviewReply->user_id) {
+            return response()->json([
+                'message' => 'User hanya bisa mengubah balasan review miliknya sendiri.',
+            ], 403);
+        }
+
+        $reviewReply->update([
+            'message' => $validated['message'] ?? $reviewReply->message,
+        ]);
 
         return response()->json([
             'message' => 'Balasan review berhasil diperbarui.',
@@ -78,8 +85,18 @@ class ReviewReplyController extends Controller
         ]);
     }
 
-    public function destroy(ReviewReply $reviewReply): JsonResponse
+    public function destroy(Request $request, ReviewReply $reviewReply): JsonResponse
     {
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+        ]);
+
+        if ((int) $validated['user_id'] !== $reviewReply->user_id) {
+            return response()->json([
+                'message' => 'User hanya bisa menghapus balasan review miliknya sendiri.',
+            ], 403);
+        }
+
         $reviewReply->delete();
 
         return response()->json([
