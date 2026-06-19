@@ -9,18 +9,21 @@
             font-family:Arial, sans-serif;
         }
 
+
+
         .garis{
             display:flex;
             justify-content:space-between;
             align-items:center;
             padding:15px 40px;
             border-bottom:6px solid #c62424;
+            background-color: #1e293b
         }
 
         .logo{
             font-size:30px;
             font-weight:bold;
-            color:green;
+            color:White;
         }
 
         .menu-kanan{
@@ -60,7 +63,7 @@
 
     <div class="garis">
 
-        <div class="logo">
+        <div class="logo">      
             <img src = "https://media.licdn.com/dms/image/v2/D5603AQEaaH8bWKgD-A/profile-displayphoto-shrink_200_200/B56Zjhg5zeHcAg-/0/1756130156250?e=2147483647&v=beta&t=nnT1i6FjaRIygiaBSpq-UpuAmqQ8AGiEPKrLuHJnJVQ" width = "50px" height = "50px" style="border-radius: 50%; margin-right: 10px;">
             Pendekar Store
         </div>
