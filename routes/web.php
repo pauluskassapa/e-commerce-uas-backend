@@ -34,6 +34,10 @@ Route::post('/cart/decrease/{product}', [CartController::class, 'decrease'])
 Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])
     ->name('cart.remove');
 
+Route::get('/products/{category:slug}', [ProductController::class, 'byCategory'])
+    ->where('category', '^(?!create$)(?![0-9]+$)[A-Za-z0-9-]+$')
+    ->name('products.by-category');
+
 Route::resource('products', ProductController::class);
 Route::resource('categories', CategoryController::class);
 Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
