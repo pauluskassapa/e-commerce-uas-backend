@@ -25,6 +25,9 @@
             <textarea name="description">{{ old('description', $category->description) }}</textarea>
         </label><br>
 
-        <button type="submit">Update</button>
+        <p>
+    <button type="submit">Update</button>
+    <a href="{{ route('categories.index') }}">Kembali</a>
+        </p>
     </form>
 @endsection

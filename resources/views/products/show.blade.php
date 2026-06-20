@@ -15,9 +15,28 @@
         <p><strong>Gambar:</strong></p>
         <img src="{{ $product->image }}" alt="{{ $product->name }}" width="200">
     @endif
-
+    @auth
+    <form method="post" action="{{ route('cart.add', $product) }}">
+        @csrf
+        <button type="submit">Tambah ke Cart</button>
+    </form>
+    @else
+    <p>
+        <a href="{{ route('login') }}">Login dulu untuk tambah produk ke cart</a>
+    </p>
+    @endauth
     <p>
         <a href="{{ route('products.index') }}">Kembali</a>
         <a href="{{ route('products.edit', $product) }}">Edit</a>
     </p>
 @endsection
+@auth
+    <form method="post" action="{{ route('cart.add', $product) }}">
+        @csrf
+        <button type="submit">Tambah ke Cart</button>
+    </form>
+@else
+    <p>
+        <a href="{{ route('login') }}">Login dulu untuk tambah produk ke cart</a>
+    </p>
+@endauth

@@ -3,7 +3,11 @@
 @section('content')
     <h2>Products</h2>
 
-    <a href="{{ route('products.create') }}">Tambah Product</a>
+    <p>
+        <a href="{{ route('products.create') }}">Tambah Product</a>
+        <a href="{{ route('categories.index') }}">Kelola Category</a>
+        <a href="{{ route('carts.index') }}">Lihat Cart</a>
+    </p>
 
     @if (session('success'))
         <p>{{ session('success') }}</p>
@@ -63,6 +67,15 @@
                 <td>
                     <a href="{{ route('products.show', $product) }}">Detail</a>
                     <a href="{{ route('products.edit', $product) }}">Edit</a>
+
+                    @auth
+                        <form method="post" action="{{ route('cart.add', $product) }}" style="display:inline">
+                            @csrf
+                            <button type="submit">Tambah ke Cart</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}">Login untuk Cart</a>
+                    @endauth
 
                     <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
                         @csrf
