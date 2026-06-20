@@ -34,6 +34,9 @@
         <label>Deskripsi <textarea name="description">{{ old('description', $product->description) }}</textarea></label><br>
         <label><input type="checkbox" name="is_active" value="1" @checked($product->is_active)> Aktif</label><br>
 
-        <button type="submit">Update</button>
+        <p>
+    <button type="submit">Update</button>
+    <a href="{{ route('products.index') }}">Kembali</a>
+        </p>
     </form>
 @endsection
