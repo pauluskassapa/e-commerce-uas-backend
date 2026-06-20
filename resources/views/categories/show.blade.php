@@ -28,4 +28,9 @@
             <tr><td colspan="4">Belum ada produk dalam kategori ini.</td></tr>
         @endforelse
     </table>
+    <p>
+    <a href="{{ route('categories.index') }}">Kembali</a>
+    <a href="{{ route('categories.edit', $category) }}">Edit</a>
+    <a href="{{ route('products.index', ['category_id' => $category->id]) }}">Lihat Produk Kategori Ini</a>
+    </p>
 @endsection
