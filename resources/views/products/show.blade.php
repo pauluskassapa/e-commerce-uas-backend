@@ -30,3 +30,13 @@
         <a href="{{ route('products.edit', $product) }}">Edit</a>
     </p>
 @endsection
+@auth
+    <form method="post" action="{{ route('cart.add', $product) }}">
+        @csrf
+        <button type="submit">Tambah ke Cart</button>
+    </form>
+@else
+    <p>
+        <a href="{{ route('login') }}">Login dulu untuk tambah produk ke cart</a>
+    </p>
+@endauth
