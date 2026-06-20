@@ -3,7 +3,11 @@
 @section('content')
     <h2>Products</h2>
 
-    <a href="{{ route('products.create') }}">Tambah Product</a>
+    @auth
+        @if (auth()->user()->role === 'seller')
+            <a href="{{ route('products.create') }}">Tambah Product</a>
+        @endif
+    @endauth
 
     @if (session('success'))
         <p>{{ session('success') }}</p>
@@ -62,15 +66,19 @@
                 <td>{{ $product->is_active ? 'Aktif' : 'Nonaktif' }}</td>
                 <td>
                     <a href="{{ route('products.show', $product) }}">Detail</a>
-                    <a href="{{ route('products.edit', $product) }}">Edit</a>
+                    @auth
+                        @if (auth()->user()->role === 'seller')
+                            <a href="{{ route('products.edit', $product) }}">Edit</a>
 
-                    <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
-                        @csrf
-                        @method('delete')
-                        <button type="submit" onclick="return confirm('Yakin mau hapus produk ini?')">
-                            Hapus
-                        </button>
-                    </form>
+                            <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" onclick="return confirm('Yakin mau hapus produk ini?')">
+                                    Hapus
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
                 </td>
             </tr>
         @empty

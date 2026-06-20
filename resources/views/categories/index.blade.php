@@ -3,7 +3,11 @@
 @section('content')
     <h2>Categories</h2>
 
-    <a href="{{ route('categories.create') }}">Tambah Kategori</a>
+    @auth
+        @if (auth()->user()->role === 'seller')
+            <a href="{{ route('categories.create') }}">Tambah Kategori</a>
+        @endif
+    @endauth
 
     @if (session('success'))
         <p>{{ session('success') }}</p>
@@ -28,15 +32,19 @@
                 <td>{{ $category->products_count }}</td>
                 <td>
                     <a href="{{ route('categories.show', $category) }}">Detail</a>
-                    <a href="{{ route('categories.edit', $category) }}">Edit</a>
+                    @auth
+                        @if (auth()->user()->role === 'seller')
+                            <a href="{{ route('categories.edit', $category) }}">Edit</a>
 
-                    <form method="post" action="{{ route('categories.destroy', $category) }}" style="display:inline">
-                        @csrf
-                        @method('delete')
-                        <button type="submit" onclick="return confirm('Yakin mau hapus kategori ini?')">
-                            Hapus
-                        </button>
-                    </form>
+                            <form method="post" action="{{ route('categories.destroy', $category) }}" style="display:inline">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" onclick="return confirm('Yakin mau hapus kategori ini?')">
+                                    Hapus
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
                 </td>
             </tr>
         @empty
