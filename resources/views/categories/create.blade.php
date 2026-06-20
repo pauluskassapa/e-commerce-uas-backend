@@ -14,6 +14,9 @@
             <textarea name="description">{{ old('description') }}</textarea>
         </label><br>
 
-        <button type="submit">Simpan</button>
+        <p>
+    <button type="submit">Simpan</button>
+    <a href="{{ route('categories.index') }}">Kembali</a>
+        </p>
     </form>
 @endsection
