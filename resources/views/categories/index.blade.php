@@ -6,7 +6,6 @@
     <a href="{{ route('categories.create') }}">Tambah Kategori</a>
     <a href="{{ route('products.index') }}">Kembali ke Product</a>
     </p>
-    <a href="{{ route('categories.create') }}">Tambah Kategori</a>
 
     @if (session('success'))
         <p>{{ session('success') }}</p>
