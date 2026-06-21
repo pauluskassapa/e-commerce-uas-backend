@@ -157,7 +157,6 @@ function updateTotal()
         if (cb.checked) {
 
             total += parseInt(cb.dataset.subtotal);
-
         }
 
     });
@@ -180,7 +179,6 @@ selectAll?.addEventListener('change', function () {
     });
 
     updateTotal();
-
 });
 
 </script>
