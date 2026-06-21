@@ -3,7 +3,21 @@
 @section('content')
     <h2>Products</h2>
 
-    <a href="{{ route('products.create') }}">Tambah Product</a>
+    @if (isset($selectedCategory))
+    <p>Menampilkan produk kategori: {{ $selectedCategory->name }}</p>
+    @endif
+    <p>
+        @auth
+            @if (auth()->user()->role === 'seller')
+                <a href="{{ route('products.create') }}">Tambah Product</a>
+                <a href="{{ route('categories.index') }}">Kelola Category</a>
+            @elseif (auth()->user()->role === 'buyer')
+                <a href="{{ route('carts.index') }}">Lihat Cart</a>
+            @endif
+        @else
+            <a href="{{ route('login') }}">Login untuk belanja</a>
+        @endauth
+    </p>
 
     @if (session('success'))
         <p>{{ session('success') }}</p>
@@ -44,6 +58,7 @@
     <table border="1" cellpadding="6">
         <tr>
             <th>ID</th>
+            <th>Image</th>
             <th>Name</th>
             <th>Category</th>
             <th>Price</th>
@@ -55,6 +70,19 @@
         @forelse ($products as $product)
             <tr>
                 <td>{{ $product->id }}</td>
+                <td>
+                    @if ($product->image)
+                        @php
+                            $imageUrl = str_starts_with($product->image, 'http')
+                                ? $product->image
+                                : asset(ltrim($product->image, '/'));
+                        @endphp
+
+                        <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="80">
+                    @else
+                        -
+                    @endif
+                </td>
                 <td>{{ $product->name }}</td>
                 <td>{{ $product->category?->name ?? '-' }}</td>
                 <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
@@ -62,20 +90,32 @@
                 <td>{{ $product->is_active ? 'Aktif' : 'Nonaktif' }}</td>
                 <td>
                     <a href="{{ route('products.show', $product) }}">Detail</a>
-                    <a href="{{ route('products.edit', $product) }}">Edit</a>
 
-                    <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
-                        @csrf
-                        @method('delete')
-                        <button type="submit" onclick="return confirm('Yakin mau hapus produk ini?')">
-                            Hapus
-                        </button>
-                    </form>
+                    @auth
+                        @if (auth()->user()->role === 'seller')
+                            <a href="{{ route('products.edit', $product) }}">Edit</a>
+
+                            <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" onclick="return confirm('Yakin mau hapus produk ini?')">
+                                    Hapus
+                                </button>
+                            </form>
+                        @elseif (auth()->user()->role === 'buyer')
+                            <form method="post" action="{{ route('cart.add', $product) }}" style="display:inline">
+                                @csrf
+                                <button type="submit">Tambah ke Cart</button>
+                            </form>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}">Login untuk Cart</a>
+                    @endauth
                 </td>
             </tr>
         @empty
             <tr>
-                <td colspan="7">Belum ada data produk.</td>
+                <td colspan="8">Belum ada data produk.</td>
             </tr>
         @endforelse
     </table>

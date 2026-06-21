@@ -1,85 +1,186 @@
 @extends('layouts.app')
 
 @section('content')
-<h2>Keranjang Belanja (Data Dummy)</h2>
+
+<h2 class="cart-title">🛒 Keranjang Belanja</h2>
+
+@if(!$cart || $cart->items->isEmpty())
+
+<div class="empty-cart">
+    <h2>Cart belum terisi</h2>
+
+<p>Yuk tambahkan produk ke keranjang dahulu.</p>
+
+<a href="{{ route('dashboard') }}"
+   class="back-button">
+    Kembali ke Produk
+</a>
+
+</div>
+
+@else
+
+<div class="select-all-container">
+    <input type="checkbox" id="select-all">
+    <label for="select-all">
+        <strong>Pilih Semua</strong>
+    </label>
+</div>
 
 @php
-    $dummyCarts = [
-        (object)[
-            'id' => 1,
-            'items' => [
-                (object)[
-                    'product' => (object)[
-                        'id' => 1,
-                        'name' => 'Laptop Gaming',
-                        'price' => 15000000
-                    ],
-                    'quantity' => 1
-                ],
-                (object)[
-                    'product' => (object)[
-                        'id' => 2,
-                        'name' => 'Mouse Wireless',
-                        'price' => 250000
-                    ],
-                    'quantity' => 2
-                ],
-                (object)[
-                    'product' => (object)[
-                        'id' => 3,
-                        'name' => 'Keyboard Mechanical',
-                        'price' => 750000
-                    ],
-                    'quantity' => 1
-                ]
-            ]
-        ]
-    ];
+$grandTotal = 0;
 @endphp
 
-@foreach($dummyCarts as $cart)
+@foreach($cart->items as $item)
 
-    <h3>Cart #{{ $cart->id }}</h3>
+@php
+    $price = $item->price ?? $item->product->price;
+    $subtotal = $price * $item->quantity;
+    $grandTotal += $subtotal;
+@endphp
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Produk</th>
-                <th>Harga</th>
-                <th>Quantity</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
+<div class="cart-item">
 
-        <tbody>
+    {{-- Checkbox --}}
+    <div>
+        <input
+            type="checkbox"
+            class="item-checkbox"
+            data-subtotal="{{ $subtotal }}">
+    </div>
 
-            @foreach($cart->items as $item)
+    {{-- Gambar Produk --}}
+    <div class="cart-image">
+        <img
+            src="{{ $item->product->image ?? 'https://via.placeholder.com/150' }}"
+            alt="{{ $item->product->name }}">
+    </div>
 
-                <tr>
-                    <td>{{ $item->product->name }}</td>
+    {{-- Informasi Produk --}}
+    <div class="cart-info">
 
-                    <td>
-                        Rp {{ number_format($item->product->price) }}
-                    </td>
+        <h3>{{ $item->product->name }}</h3>
 
-                    <td>
-                        <button>-</button>
+        <p>{{ $item->product->description }}</p>
 
-                        {{ $item->quantity }}
+        <p>
+            Harga:
+            <strong>
+                Rp {{ number_format($price,0,',','.') }}
+            </strong>
+        </p>
 
-                        <button>+</button>
-                    </td>
+        <p>
+            Subtotal:
+            <strong>
+                Rp {{ number_format($subtotal,0,',','.') }}
+            </strong>
+        </p>
 
-                    <td>
-                        <button>Hapus</button>
-                    </td>
-                </tr>
+    </div>
 
-            @endforeach
+    {{-- Quantity --}}
+    <div class="cart-quantity">
 
-        </tbody>
-    </table>
+        <form
+            action="{{ route('cart.decrease', $item->product_id) }}"
+            method="POST">
+            @csrf
+            <button type="submit">-</button>
+        </form>
+
+        <strong>{{ $item->quantity }}</strong>
+
+        <form
+            action="{{ route('cart.increase', $item->product_id) }}"
+            method="POST">
+            @csrf
+            <button type="submit">+</button>
+        </form>
+
+    </div>
+
+    {{-- Hapus --}}
+    <div>
+
+        <form
+            action="{{ route('cart.remove', $item->product_id) }}"
+            method="POST">
+
+            @csrf
+            @method('DELETE')
+
+            <button
+                type="submit"
+                onclick="return confirm('Hapus produk dari keranjang?')">
+                🗑 Hapus
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
 
 @endforeach
+
+<hr>
+
+<div class="cart-footer">
+
+<h2 class="total-price">
+    Total Belanja:
+    Rp <span id="selected-total">0</span>
+</h2>
+
+<a href="{{ route('payments.index') }}"
+   class="checkout-button">
+    Checkout
+</a>
+
+</div>
+
+@endif
+
+<script>
+
+const checkboxes = document.querySelectorAll('.item-checkbox');
+const totalElement = document.getElementById('selected-total');
+const selectAll = document.getElementById('select-all');
+
+function updateTotal()
+{
+    let total = 0;
+
+    checkboxes.forEach(cb => {
+
+        if (cb.checked) {
+
+            total += parseInt(cb.dataset.subtotal);
+        }
+
+    });
+
+    totalElement.textContent = total.toLocaleString('id-ID');
+}
+
+checkboxes.forEach(cb => {
+
+    cb.addEventListener('change', updateTotal);
+
+});
+
+selectAll?.addEventListener('change', function () {
+
+    checkboxes.forEach(cb => {
+
+        cb.checked = this.checked;
+
+    });
+
+    updateTotal();
+});
+
+</script>
 
 @endsection

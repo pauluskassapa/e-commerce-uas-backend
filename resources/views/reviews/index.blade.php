@@ -1,27 +1,55 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>Reviews</h2>
-    <p>TODO: isi CRUD review, rating, komentar, dan relasi ke produk.</p>
+    @include('reviews.partials.styles')
 
-    <table border="1" cellpadding="6">
-        <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Product</th>
-            <th>Rating</th>
-            <th>Comment</th>
-        </tr>
-        @forelse ($reviews as $review)
-            <tr>
-                <td>{{ $review->id }}</td>
-                <td>{{ $review->user?->name ?? '-' }}</td>
-                <td>{{ $review->product?->name ?? '-' }}</td>
-                <td>{{ $review->rating }}</td>
-                <td>{{ $review->comment }}</td>
-            </tr>
-        @empty
-            <tr><td colspan="5">Belum ada data review.</td></tr>
-        @endforelse
-    </table>
+    <section class="review-page" aria-labelledby="review-list-title">
+        <div class="review-heading">
+            <div>
+                <p class="review-kicker">Ulasan pembeli</p>
+                <h2 id="review-list-title">Review Produk</h2>
+            </div>
+            <div class="review-count">
+                <strong>{{ $reviews->count() }}</strong>
+                <span>review</span>
+            </div>
+        </div>
+
+        <div class="review-table-shell">
+            <table class="review-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Produk</th>
+                        <th>Rating</th>
+                        <th>Komentar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($reviews as $review)
+                        <tr>
+                            <td>#{{ $review->id }}</td>
+                            <td>{{ $review->user?->name ?? '-' }}</td>
+                            <td><strong>{{ $review->product?->name ?? '-' }}</strong></td>
+                            <td>
+                                <span class="review-rating" aria-label="Rating {{ $review->rating }} dari 5">
+                                    {{ $review->rating }}/5
+                                </span>
+                            </td>
+                            <td class="review-comment-cell">{{ $review->comment ?? '-' }}</td>
+                            <td>
+                                <a class="review-action" href="{{ route('reviews.show', $review) }}">Detail</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td class="review-empty" colspan="6">Belum ada data review.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
 @endsection
