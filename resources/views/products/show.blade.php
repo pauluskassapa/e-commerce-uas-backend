@@ -22,24 +22,27 @@
         <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="200">
     @endif
 
-    <h3>Review Pembeli</h3>
+    <h3>Rating Produk</h3>
 
-    @forelse ($product->reviews as $review)
-        <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
-            <p><strong>User:</strong> {{ $review->user?->name ?? 'User' }}</p>
-            <p><strong>Rating:</strong> {{ $review->rating }}/5</p>
-            <p><strong>Komentar:</strong> {{ $review->comment ?? '-' }}</p>
+    @php
+        $averageRating = $product->averageRating();
+        $reviewCount = $product->reviewCount();
+    @endphp
 
-            @if ($review->replies->count())
-                <strong>Balasan Seller:</strong>
-                @foreach ($review->replies as $reply)
-                    <p>{{ $reply->user?->name ?? 'Seller' }}: {{ $reply->message }}</p>
-                @endforeach
-            @endif
-        </div>
-    @empty
-        <p>Belum ada review untuk produk ini.</p>
-    @endforelse
+    <div class="rating-summary">
+        @if ($reviewCount > 0)
+            <div class="rating-stars" aria-label="Rating {{ $averageRating }} dari 5">
+                @for ($star = 1; $star <= 5; $star++)
+                    <span class="{{ $star <= round($averageRating) ? 'star-filled' : 'star-empty' }}">★</span>
+                @endfor
+            </div>
+
+            <p class="rating-score">{{ $averageRating }}/5</p>
+            <p class="rating-count">Berdasarkan {{ $reviewCount }} review pembeli</p>
+        @else
+            <p class="rating-empty">Belum ada rating untuk produk ini.</p>
+        @endif
+    </div>
 
     <p>
         <a href="{{ route('products.index') }}">Kembali</a>
