@@ -2,7 +2,10 @@
 
 @section('content')
     <h2>Products</h2>
-
+    
+    @if (isset($selectedCategory))
+    <p>Menampilkan produk kategori: {{ $selectedCategory->name }}</p>
+    @endif
     <p>
         @auth
             @if (auth()->user()->role === 'seller')
