@@ -2,7 +2,7 @@
 
 @section('content')
     <h2>Reviews</h2>
-    <p>TODO: isi CRUD review, rating, komentar, dan relasi ke produk.</p>
+    <p>Daftar ulasan produk dari user.</p>
 
     <table border="1" cellpadding="6">
         <tr>
@@ -11,6 +11,7 @@
             <th>Product</th>
             <th>Rating</th>
             <th>Comment</th>
+            <th>Action</th>
         </tr>
         @forelse ($reviews as $review)
             <tr>
@@ -19,9 +20,10 @@
                 <td>{{ $review->product?->name ?? '-' }}</td>
                 <td>{{ $review->rating }}</td>
                 <td>{{ $review->comment }}</td>
+                <td><a href="{{ route('reviews.show', $review) }}">Detail</a></td>
             </tr>
         @empty
-            <tr><td colspan="5">Belum ada data review.</td></tr>
+            <tr><td colspan="6">Belum ada data review.</td></tr>
         @endforelse
     </table>
 @endsection
