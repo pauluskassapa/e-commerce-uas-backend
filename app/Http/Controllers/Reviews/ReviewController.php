@@ -119,7 +119,7 @@ class ReviewController extends Controller
 
         if ($user->role !== 'buyer') {
             return response()->json([
-                'message' => 'Hanya buyer yang bisa mengelola review.',
+                'message' => 'Hanya buyer yang bisa mengatur review.',
             ], 403);
         }
 
@@ -150,7 +150,7 @@ class ReviewController extends Controller
 
         if ($user->role !== 'buyer') {
             return response()->json([
-                'message' => 'Hanya buyer yang bisa mengelola review.',
+                'message' => 'Hanya buyer yang bisa mengatur review.',
             ], 403);
         }
 
