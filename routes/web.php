@@ -16,30 +16,64 @@ Route::get('/', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/register', [AuthController::class, 'storeRegister'])->name('register.store');
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login', [AuthController::class, 'storeLogin'])->name('login.store');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::post('/cart/add/{product}', [CartController::class, 'add'])
+// Authentication
+
+
+Route::get('/register', [AuthController::class, 'register'])
+    ->name('register');
+
+Route::post('/register', [AuthController::class, 'storeRegister'])
+    ->name('register.store');
+
+Route::get('/login', [AuthController::class, 'login'])
+    ->name('login');
+
+Route::post('/login', [AuthController::class, 'storeLogin'])
+    ->name('login.store');
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->name('logout');
+
+//cart
+
+Route::resource('carts', CartController::class)
+    ->only(['index', 'show']);
+
+Route::post('/cart/add/{product}', [CartItemController::class, 'store'])
     ->name('cart.add');
 
-Route::post('/cart/increase/{product}', [CartController::class, 'increase'])
+Route::post('/cart/increase/{product}', [CartItemController::class, 'increase'])
     ->name('cart.increase');
 
-Route::post('/cart/decrease/{product}', [CartController::class, 'decrease'])
+Route::post('/cart/decrease/{product}', [CartItemController::class, 'decrease'])
     ->name('cart.decrease');
 
-Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])
+Route::delete('/cart/remove/{product}', [CartItemController::class, 'destroy'])
     ->name('cart.remove');
+
+//catalog
 
 Route::resource('products', ProductController::class);
 Route::resource('categories', CategoryController::class);
-Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
-Route::resource('review-replies', ReviewReplyController::class)->only(['index', 'show']);
-Route::resource('carts', CartController::class)->only(['index', 'show']);
-Route::resource('cart-items', CartItemController::class)->only(['index', 'show']);
-Route::resource('payments', PaymentController::class)->only(['index', 'show']);
-Route::resource('payment-methods', PaymentMethodController::class)->only(['index', 'show']);
-Route::resource('profiles', ProfileController::class)->only(['index', 'show']);
+
+//reviews
+
+Route::resource('reviews', ReviewController::class)
+    ->only(['index', 'show']);
+
+Route::resource('review-replies', ReviewReplyController::class)
+    ->only(['index', 'show']);
+
+//payment
+
+Route::resource('payments', PaymentController::class)
+    ->only(['index', 'show']);
+
+Route::resource('payment-methods', PaymentMethodController::class)
+    ->only(['index', 'show']);
+
+//prtofile
+
+Route::resource('profiles', ProfileController::class)
+    ->only(['index', 'show']);
