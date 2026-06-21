@@ -35,8 +35,8 @@
         <label><input type="checkbox" name="is_active" value="1" @checked($product->is_active)> Aktif</label><br>
 
         <p>
-    <button type="submit">Update</button>
-    <a href="{{ route('products.index') }}">Kembali</a>
+            <button type="submit">Update</button>
+            <a href="{{ route('products.index') }}">Kembali</a>
         </p>
     </form>
 @endsection

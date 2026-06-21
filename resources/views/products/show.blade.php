@@ -13,7 +13,13 @@
 
     @if ($product->image)
         <p><strong>Gambar:</strong></p>
-        <img src="{{ $product->image }}" alt="{{ $product->name }}" width="200">
+        @php
+            $imageUrl = str_starts_with($product->image, 'http')
+                ? $product->image
+                : asset(ltrim($product->image, '/'));
+        @endphp
+
+        <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="200">
     @endif
 
     <p>
