@@ -1,6 +1,6 @@
 <style>
     .review-page {
-        color: #111827;
+        color: #1f2937;
         font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -11,19 +11,19 @@
         gap: 20px;
         margin-bottom: 24px;
         padding-bottom: 18px;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 2px solid #dcfce7;
     }
 
     .review-heading h2,
     .review-heading h3 {
         margin: 4px 0 0;
-        color: #111827;
+        color: #14532d;
         letter-spacing: 0;
     }
 
     .review-kicker {
         margin: 0;
-        color: #2563eb;
+        color: #16a34a;
         font-size: 13px;
         font-weight: 700;
         text-transform: uppercase;
@@ -35,10 +35,10 @@
         gap: 7px;
         min-width: 92px;
         padding: 10px 14px;
-        border: 1px solid #dbeafe;
+        border: 1px solid #bbf7d0;
         border-radius: 8px;
-        background: #eff6ff;
-        color: #1e40af;
+        background: #f0fdf4;
+        color: #15803d;
     }
 
     .review-count strong {
@@ -52,9 +52,10 @@
     .review-table-shell {
         width: 100%;
         overflow-x: auto;
-        border: 1px solid #e5e7eb;
+        border: 1px solid #d1d5db;
         border-radius: 8px;
         background: #ffffff;
+        box-shadow: 0 2px 8px rgba(22, 101, 52, 0.08);
     }
 
     .review-table {
@@ -72,7 +73,7 @@
     }
 
     .review-table th {
-        background: #111827;
+        background: #15803d;
         color: #ffffff;
         font-size: 12px;
         font-weight: 700;
@@ -84,7 +85,7 @@
     }
 
     .review-table tbody tr:hover {
-        background: #f8fafc;
+        background: #f0fdf4;
     }
 
     .review-comment-cell {
@@ -92,6 +93,10 @@
         color: #4b5563;
         line-height: 1.5;
         overflow-wrap: anywhere;
+    }
+
+    .review-table td strong {
+        color: #166534;
     }
 
     .review-rating {
@@ -119,22 +124,25 @@
     }
 
     .review-action {
-        background: #2563eb;
+        border: 1px solid #16a34a;
+        background: #16a34a;
         color: #ffffff;
+        box-shadow: 0 2px 5px rgba(22, 163, 74, 0.2);
     }
 
     .review-action:hover {
-        background: #1d4ed8;
+        border-color: #15803d;
+        background: #15803d;
     }
 
     .review-back {
         margin-bottom: 20px;
-        border: 1px solid #d1d5db;
-        color: #374151;
+        border: 1px solid #86efac;
+        color: #15803d;
     }
 
     .review-back:hover {
-        background: #f3f4f6;
+        background: #f0fdf4;
     }
 
     .review-empty {
@@ -149,7 +157,7 @@
         gap: 18px;
         margin-bottom: 24px;
         padding-bottom: 24px;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid #dcfce7;
     }
 
     .review-detail-item span,
@@ -171,7 +179,8 @@
     .review-text {
         margin: 0;
         padding: 18px 0 18px 18px;
-        border-left: 4px solid #f59e0b;
+        border-left: 4px solid #22c55e;
+        background: #f7fee7;
         color: #374151;
         font-size: 16px;
         line-height: 1.7;
@@ -181,7 +190,7 @@
     .review-replies {
         margin-top: 30px;
         padding-top: 24px;
-        border-top: 1px solid #e5e7eb;
+        border-top: 1px solid #bbf7d0;
     }
 
     .review-replies h3 {
@@ -191,7 +200,7 @@
 
     .review-reply-row {
         padding: 16px 0;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid #dcfce7;
     }
 
     .review-reply-row:last-child {
@@ -210,8 +219,9 @@
         margin-left: 8px;
         padding: 3px 7px;
         border-radius: 5px;
-        background: #ecfdf5;
-        color: #047857;
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+        color: #15803d;
         font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
