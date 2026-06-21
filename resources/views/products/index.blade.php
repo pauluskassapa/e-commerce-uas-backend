@@ -3,11 +3,18 @@
 @section('content')
     <h2>Products</h2>
 
-    @auth
-        @if (auth()->user()->role === 'seller')
-            <a href="{{ route('products.create') }}">Tambah Product</a>
-        @endif
-    @endauth
+    <p>
+        @auth
+            @if (auth()->user()->role === 'seller')
+                <a href="{{ route('products.create') }}">Tambah Product</a>
+                <a href="{{ route('categories.index') }}">Kelola Category</a>
+            @elseif (auth()->user()->role === 'buyer')
+                <a href="{{ route('carts.index') }}">Lihat Cart</a>
+            @endif
+        @else
+            <a href="{{ route('login') }}">Login untuk belanja</a>
+        @endauth
+    </p>
 
     @if (session('success'))
         <p>{{ session('success') }}</p>
@@ -66,6 +73,7 @@
                 <td>{{ $product->is_active ? 'Aktif' : 'Nonaktif' }}</td>
                 <td>
                     <a href="{{ route('products.show', $product) }}">Detail</a>
+
                     @auth
                         @if (auth()->user()->role === 'seller')
                             <a href="{{ route('products.edit', $product) }}">Edit</a>
@@ -77,7 +85,14 @@
                                     Hapus
                                 </button>
                             </form>
+                        @elseif (auth()->user()->role === 'buyer')
+                            <form method="post" action="{{ route('cart.add', $product) }}" style="display:inline">
+                                @csrf
+                                <button type="submit">Tambah ke Cart</button>
+                            </form>
                         @endif
+                    @else
+                        <a href="{{ route('login') }}">Login untuk Cart</a>
                     @endauth
                 </td>
             </tr>

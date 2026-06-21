@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'buyer' => \App\Http\Middleware\EnsureUserIsBuyer::class,
             'seller' => \App\Http\Middleware\EnsureUserIsSeller::class,
         ]);
     })

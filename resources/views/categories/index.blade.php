@@ -3,17 +3,18 @@
 @section('content')
     <h2>Categories</h2>
 
-    @auth
-        @if (auth()->user()->role === 'seller')
-            <a href="{{ route('categories.create') }}">Tambah Kategori</a>
-        @endif
-    @endauth
+    <p>
+        @auth
+            @if (auth()->user()->role === 'seller')
+                <a href="{{ route('categories.create') }}">Tambah Kategori</a>
+            @endif
+        @endauth
+        <a href="{{ route('products.index') }}">Kembali ke Product</a>
+    </p>
 
     @if (session('success'))
         <p>{{ session('success') }}</p>
     @endif
-
-    <p>TODO: isi CRUD kategori untuk pengelompokan produk.</p>
 
     <table border="1" cellpadding="6">
         <tr>
@@ -32,6 +33,7 @@
                 <td>{{ $category->products_count }}</td>
                 <td>
                     <a href="{{ route('categories.show', $category) }}">Detail</a>
+
                     @auth
                         @if (auth()->user()->role === 'seller')
                             <a href="{{ route('categories.edit', $category) }}">Edit</a>

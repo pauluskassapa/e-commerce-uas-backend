@@ -1,85 +1,136 @@
 @extends('layouts.app')
 
 @section('content')
-<h2>Keranjang Belanja (Data Dummy)</h2>
 
-@php
-    $dummyCarts = [
-        (object)[
-            'id' => 1,
-            'items' => [
-                (object)[
-                    'product' => (object)[
-                        'id' => 1,
-                        'name' => 'Laptop Gaming',
-                        'price' => 15000000
-                    ],
-                    'quantity' => 1
-                ],
-                (object)[
-                    'product' => (object)[
-                        'id' => 2,
-                        'name' => 'Mouse Wireless',
-                        'price' => 250000
-                    ],
-                    'quantity' => 2
-                ],
-                (object)[
-                    'product' => (object)[
-                        'id' => 3,
-                        'name' => 'Keyboard Mechanical',
-                        'price' => 750000
-                    ],
-                    'quantity' => 1
-                ]
-            ]
-        ]
-    ];
-@endphp
+<h2>🛒 Keranjang Belanja</h2>
 
-@foreach($dummyCarts as $cart)
+@if(!$cart || $cart->items->isEmpty())
 
-    <h3>Cart #{{ $cart->id }}</h3>
+    <div style="text-align:center; padding:50px;">
+        <h2>Cart belum terisi</h2>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Produk</th>
-                <th>Harga</th>
-                <th>Quantity</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
+        <p>Yuk tambahkan produk ke keranjang dahulu.</p>
 
-        <tbody>
+        <a href="{{ route('dashboard') }}"
+           style="
+                background:green;
+                color:white;
+                padding:12px 24px;
+                border-radius:10px;
+                text-decoration:none;">
+            Kembali ke Produk
+        </a>
+    </div>
 
-            @foreach($cart->items as $item)
+@else
 
-                <tr>
-                    <td>{{ $item->product->name }}</td>
+    @php
+        $grandTotal = 0;
+    @endphp
 
-                    <td>
-                        Rp {{ number_format($item->product->price) }}
-                    </td>
+    @foreach($cart->items as $item)
 
-                    <td>
-                        <button>-</button>
+        @php
+            $price = $item->price ?? $item->product->price;
+            $subtotal = $price * $item->quantity;
+            $grandTotal += $subtotal;
+        @endphp
 
-                        {{ $item->quantity }}
+        <div style="
+            display:flex;
+            gap:20px;
+            align-items:center;
+            border:1px solid #ddd;
+            border-radius:10px;
+            padding:15px;
+            margin-bottom:15px;
+        ">
 
-                        <button>+</button>
-                    </td>
+            {{-- Gambar Produk --}}
+            <div>
+                <img
+                    src="{{ $item->product->image ?? 'https://via.placeholder.com/150' }}"
+                    width="120"
+                    alt="{{ $item->product->name }}">
+            </div>
 
-                    <td>
-                        <button>Hapus</button>
-                    </td>
-                </tr>
+            {{-- Informasi Produk --}}
+            <div style="flex:1;">
 
-            @endforeach
+                <h3>{{ $item->product->name }}</h3>
 
-        </tbody>
-    </table>
+                <p>{{ $item->product->description }}</p>
 
-@endforeach
+                <p>
+                    Harga:
+                    <strong>
+                        Rp {{ number_format($price,0,',','.') }}
+                    </strong>
+                </p>
+
+                <p>
+                    Subtotal:
+                    <strong>
+                        Rp {{ number_format($subtotal,0,',','.') }}
+                    </strong>
+                </p>
+
+            </div>
+
+            {{-- Quantity --}}
+            <div style="display:flex; align-items:center; gap:10px;">
+
+                <form
+                    action="{{ route('cart.decrease', $item->product_id) }}"
+                    method="POST">
+                    @csrf
+                    <button type="submit">-</button>
+                </form>
+
+                <strong>{{ $item->quantity }}</strong>
+
+                <form
+                    action="{{ route('cart.increase', $item->product_id) }}"
+                    method="POST">
+                    @csrf
+                    <button type="submit">+</button>
+                </form>
+
+            </div>
+
+            {{-- Hapus --}}
+            <div>
+
+                <form
+                    action="{{ route('cart.remove', $item->product_id) }}"
+                    method="POST">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button
+                        type="submit"
+                        onclick="return confirm('Hapus produk dari keranjang?')">
+                        🗑 Hapus
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    @endforeach
+
+    <hr>
+
+    <div style="text-align:right;">
+        <h2>
+            Total Belanja:
+            Rp {{ number_format($grandTotal,0,',','.') }}
+        </h2>
+    </div>
+
+@endif
 
 @endsection

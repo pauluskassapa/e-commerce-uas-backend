@@ -18,6 +18,24 @@
 
     <p>
         <a href="{{ route('products.index') }}">Kembali</a>
-        <a href="{{ route('products.edit', $product) }}">Edit</a>
+
+        @auth
+            @if (auth()->user()->role === 'seller')
+                <a href="{{ route('products.edit', $product) }}">Edit</a>
+            @endif
+        @endauth
     </p>
+
+    @auth
+        @if (auth()->user()->role === 'buyer')
+            <form method="post" action="{{ route('cart.add', $product) }}">
+                @csrf
+                <button type="submit">Tambah ke Cart</button>
+            </form>
+        @endif
+    @else
+        <p>
+            <a href="{{ route('login') }}">Login dulu untuk tambah produk ke cart</a>
+        </p>
+    @endauth
 @endsection
