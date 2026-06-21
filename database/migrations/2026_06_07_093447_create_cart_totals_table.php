@@ -21,8 +21,6 @@ return new class extends Migration
 
             $table->integer('total_item')->default(0);
     $table->decimal('total_price', 15, 2)->default(0);
-
-    $table->timestamps();
 });
         
     }
