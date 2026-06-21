@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Reviews;
 
 use App\Http\Controllers\Controller;
 use App\Models\ReviewReply;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -24,9 +25,17 @@ class ReviewReplyController extends Controller
         return view('review-replies.show', compact('reviewReply'));
     }
 
-    public function apiIndex(): JsonResponse
+    public function apiIndex(Request $request): JsonResponse
     {
-        $replies = ReviewReply::with(['review', 'user'])
+        $validated = $request->validate([
+            'review_id' => ['sometimes', 'integer', 'exists:reviews,id'],
+        ]);
+
+        $replies = ReviewReply::with(['review.product', 'user'])
+            ->when(
+                $validated['review_id'] ?? null,
+                fn ($query, $reviewId) => $query->where('review_id', $reviewId)
+            )
             ->latest()
             ->get();
 
@@ -38,7 +47,7 @@ class ReviewReplyController extends Controller
 
     public function apiShow(ReviewReply $reviewReply): JsonResponse
     {
-        $reviewReply->load(['review', 'user']);
+        $reviewReply->load(['review.product', 'user']);
 
         return response()->json([
             'message' => 'Detail balasan review berhasil ditampilkan.',
@@ -50,11 +59,23 @@ class ReviewReplyController extends Controller
     {
         $validated = $request->validate([
             'review_id' => ['required', 'integer', 'exists:reviews,id'],
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'user_id' => $this->userIdRules($request),
             'message' => ['required', 'string', 'max:1000'],
         ]);
 
-        $reply = ReviewReply::create($validated);
+        $user = $this->resolveUser($request, $validated['user_id'] ?? null);
+
+        if ($user->role !== 'seller') {
+            return response()->json([
+                'message' => 'Hanya seller yang bisa membalas review.',
+            ], 403);
+        }
+
+        $reply = ReviewReply::create([
+            'review_id' => $validated['review_id'],
+            'user_id' => $user->id,
+            'message' => $validated['message'],
+        ]);
 
         return response()->json([
             'message' => 'Balasan review berhasil ditambahkan.',
@@ -65,11 +86,19 @@ class ReviewReplyController extends Controller
     public function update(Request $request, ReviewReply $reviewReply): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'user_id' => $this->userIdRules($request),
             'message' => ['sometimes', 'required', 'string', 'max:1000'],
         ]);
 
-        if ((int) $validated['user_id'] !== $reviewReply->user_id) {
+        $user = $this->resolveUser($request, $validated['user_id'] ?? null);
+
+        if ($user->role !== 'seller') {
+            return response()->json([
+                'message' => 'Hanya seller yang bisa mengelola balasan review.',
+            ], 403);
+        }
+
+        if ($user->id !== $reviewReply->user_id) {
             return response()->json([
                 'message' => 'User hanya bisa mengubah balasan review miliknya sendiri.',
             ], 403);
@@ -88,10 +117,18 @@ class ReviewReplyController extends Controller
     public function destroy(Request $request, ReviewReply $reviewReply): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'user_id' => $this->userIdRules($request),
         ]);
 
-        if ((int) $validated['user_id'] !== $reviewReply->user_id) {
+        $user = $this->resolveUser($request, $validated['user_id'] ?? null);
+
+        if ($user->role !== 'seller') {
+            return response()->json([
+                'message' => 'Hanya seller yang bisa mengelola balasan review.',
+            ], 403);
+        }
+
+        if ($user->id !== $reviewReply->user_id) {
             return response()->json([
                 'message' => 'User hanya bisa menghapus balasan review miliknya sendiri.',
             ], 403);
@@ -102,5 +139,23 @@ class ReviewReplyController extends Controller
         return response()->json([
             'message' => 'Balasan review berhasil dihapus.',
         ]);
+    }
+
+    private function userIdRules(Request $request): array
+    {
+        return $request->user()
+            ? ['nullable']
+            : ['required', 'integer', 'exists:users,id'];
+    }
+
+    private function resolveUser(Request $request, mixed $userId): User
+    {
+        $user = $request->user();
+
+        if ($user instanceof User) {
+            return $user;
+        }
+
+        return User::findOrFail($userId);
     }
 }
