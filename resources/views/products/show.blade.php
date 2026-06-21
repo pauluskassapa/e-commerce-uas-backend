@@ -22,6 +22,28 @@
         <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="200">
     @endif
 
+    <h3>Rating Produk</h3>
+
+    @php
+        $averageRating = $product->averageRating();
+        $reviewCount = $product->reviewCount();
+    @endphp
+
+    <div class="rating-summary">
+        @if ($reviewCount > 0)
+            <div class="rating-stars" aria-label="Rating {{ $averageRating }} dari 5">
+                @for ($star = 1; $star <= 5; $star++)
+                    <span class="{{ $star <= round($averageRating) ? 'star-filled' : 'star-empty' }}">★</span>
+                @endfor
+            </div>
+
+            <p class="rating-score">{{ $averageRating }}/5</p>
+            <p class="rating-count">Berdasarkan {{ $reviewCount }} review pembeli</p>
+        @else
+            <p class="rating-empty">Belum ada rating untuk produk ini.</p>
+        @endif
+    </div>
+
     <p>
         <a href="{{ route('products.index') }}">Kembali</a>
 

@@ -56,11 +56,16 @@ class ProductController extends Controller
     }
 
     public function show(Product $product): View
-{
-    $product->load('category');
+    {
+        $product->load([
+            'category',
+            'reviews' => fn ($query) => $query
+                ->with(['user', 'replies.user'])
+                ->latest(),
+        ]);
 
-    return view('products.show', compact('product'));
-}
+        return view('products.show', compact('product'));
+    }
 
     public function edit(Product $product): View
     {
