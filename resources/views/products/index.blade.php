@@ -2,11 +2,21 @@
 
 @section('content')
     <h2>Products</h2>
-
+    
+    @if (isset($selectedCategory))
+    <p>Menampilkan produk kategori: {{ $selectedCategory->name }}</p>
+    @endif
     <p>
-        <a href="{{ route('products.create') }}">Tambah Product</a>
-        <a href="{{ route('categories.index') }}">Kelola Category</a>
-        <a href="{{ route('carts.index') }}">Lihat Cart</a>
+        @auth
+            @if (auth()->user()->role === 'seller')
+                <a href="{{ route('products.create') }}">Tambah Product</a>
+                <a href="{{ route('categories.index') }}">Kelola Category</a>
+            @elseif (auth()->user()->role === 'buyer')
+                <a href="{{ route('carts.index') }}">Lihat Cart</a>
+            @endif
+        @else
+            <a href="{{ route('login') }}">Login untuk belanja</a>
+        @endauth
     </p>
 
     @if (session('success'))
@@ -66,24 +76,27 @@
                 <td>{{ $product->is_active ? 'Aktif' : 'Nonaktif' }}</td>
                 <td>
                     <a href="{{ route('products.show', $product) }}">Detail</a>
-                    <a href="{{ route('products.edit', $product) }}">Edit</a>
 
                     @auth
-                        <form method="post" action="{{ route('cart.add', $product) }}" style="display:inline">
-                            @csrf
-                            <button type="submit">Tambah ke Cart</button>
-                        </form>
+                        @if (auth()->user()->role === 'seller')
+                            <a href="{{ route('products.edit', $product) }}">Edit</a>
+
+                            <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
+                                @csrf
+                                @method('delete')
+                                <button type="submit" onclick="return confirm('Yakin mau hapus produk ini?')">
+                                    Hapus
+                                </button>
+                            </form>
+                        @elseif (auth()->user()->role === 'buyer')
+                            <form method="post" action="{{ route('cart.add', $product) }}" style="display:inline">
+                                @csrf
+                                <button type="submit">Tambah ke Cart</button>
+                            </form>
+                        @endif
                     @else
                         <a href="{{ route('login') }}">Login untuk Cart</a>
                     @endauth
-
-                    <form method="post" action="{{ route('products.destroy', $product) }}" style="display:inline">
-                        @csrf
-                        @method('delete')
-                        <button type="submit" onclick="return confirm('Yakin mau hapus produk ini?')">
-                            Hapus
-                        </button>
-                    </form>
                 </td>
             </tr>
         @empty

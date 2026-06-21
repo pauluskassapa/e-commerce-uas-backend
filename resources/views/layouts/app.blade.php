@@ -148,9 +148,15 @@
         <a href="{{ route('products.index') }}">Products</a>
         <a href="{{ route('categories.index') }}">Categories</a>
         <a href="{{ route('reviews.index') }}">Reviews</a>
-        <a href="{{ route('carts.index') }}">Cart</a>
-        <a href="{{ route('payments.index') }}">Payments</a>
-        <a href="{{ route('profiles.index') }}">Profile</a>
+
+        @auth
+            @if (auth()->user()->role === 'buyer')
+                <a href="{{ route('carts.index') }}">Cart</a>
+                <a href="{{ route('payments.index') }}">Payments</a>
+            @endif
+
+            <a href="{{ route('profiles.index') }}">Profile</a>
+        @endauth
 
         @guest
             <a href="{{ route('register') }}">Register</a>

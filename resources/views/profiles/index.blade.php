@@ -2,8 +2,6 @@
 
 @section('content')
     <h2>User Profiles</h2>
-    <p>TODO: isi profile user, verifikasi email, forgot password, dan reset password.</p>
-
     <table border="1" cellpadding="6">
         <tr>
             <th>ID</th>
