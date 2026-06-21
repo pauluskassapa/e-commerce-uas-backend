@@ -152,10 +152,16 @@ button {
     width: 35px;
     height: 35px;
     border: 1px solid #ccc;
-    background: white;
+    background: blue;
     cursor: pointer;
     border-radius: 6px;
     font-size: 18px;
+    font-weight: bold;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
 .cart-quantity button:hover {

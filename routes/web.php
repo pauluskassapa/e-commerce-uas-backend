@@ -11,6 +11,7 @@ use App\Http\Controllers\Payments\PaymentMethodController;
 use App\Http\Controllers\Reviews\ReviewController;
 use App\Http\Controllers\Reviews\ReviewReplyController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return view('dashboard');
@@ -82,3 +83,9 @@ Route::middleware(['auth', 'buyer'])->group(function () {
 Route::resource('profiles', ProfileController::class)
     ->only(['index', 'show'])
     ->middleware('auth');
+
+    //checkout route
+    Route::post(
+    '/checkout',
+    [CheckoutController::class,'store']
+         )->name('checkout');

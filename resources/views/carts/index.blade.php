@@ -133,10 +133,17 @@ $grandTotal = 0;
     Rp <span id="selected-total">0</span>
 </h2>
 
-<a href="{{ route('payments.index') }}"
-   class="checkout-button">
-    Checkout
-</a>
+<form action="{{ route('checkout') }}"
+      method="POST">
+
+    @csrf
+
+    <button type="submit"
+            class="checkout-button">
+        Checkout
+    </button>
+
+</form>
 
 </div>
 
