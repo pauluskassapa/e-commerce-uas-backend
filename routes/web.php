@@ -88,4 +88,4 @@ Route::resource('profiles', ProfileController::class)
     Route::post(
     '/checkout',
     [CheckoutController::class,'store']
-         )->name('checkout');
+        )->name('checkout');
