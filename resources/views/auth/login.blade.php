@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>Login Buyer / Seller</h2>
+    <h2>Login Akun</h2>
 
     <form method="post" action="{{ route('login.store') }}">
         @csrf
@@ -18,16 +18,6 @@
             <input type="password" name="password" required>
         </label>
         @error('password') <p>{{ $message }}</p> @enderror
-        <br>
-
-        <label>
-            Role
-            <select name="role" required>
-                <option value="buyer" @selected(old('role', 'buyer') === 'buyer')>Buyer</option>
-                <option value="seller" @selected(old('role') === 'seller')>Seller</option>
-            </select>
-        </label>
-        @error('role') <p>{{ $message }}</p> @enderror
         <br>
 
         <label>

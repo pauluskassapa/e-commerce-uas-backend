@@ -3,8 +3,8 @@
 @section('content')
     <h2>Products</h2>
     
-    @if (isset($selectedCategory))
-    <p>Menampilkan produk kategori: {{ $selectedCategory->name }}</p>
+    @if (isset($selectedCategoryName))
+        <p>Menampilkan produk kategori: {{ $selectedCategoryName }}</p>
     @endif
     <p>
         @auth
