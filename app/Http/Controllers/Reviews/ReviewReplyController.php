@@ -94,7 +94,7 @@ class ReviewReplyController extends Controller
 
         if ($user->role !== 'seller') {
             return response()->json([
-                'message' => 'Hanya seller yang bisa mengelola balasan review.',
+                'message' => 'Hanya seller yang bisa mengatur balasan review.',
             ], 403);
         }
 
@@ -124,7 +124,7 @@ class ReviewReplyController extends Controller
 
         if ($user->role !== 'seller') {
             return response()->json([
-                'message' => 'Hanya seller yang bisa mengelola balasan review.',
+                'message' => 'Hanya seller yang bisa mengatur balasan review.',
             ], 403);
         }
 
