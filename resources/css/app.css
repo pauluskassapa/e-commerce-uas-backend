@@ -11,6 +11,40 @@
 
 
 }
+
+/* form semua */
+
+input,
+select,
+textarea {
+    border: 1px solid #ccc;
+    background: white;
+    color: black;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    width: 300px;
+}
+
+input[type="checkbox"] {
+    width: auto;
+    height: auto;
+}
+
+
+button {
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
 /* cart */
 
 .cart-title {
