@@ -74,6 +74,9 @@ Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
 Route::resource('review-replies', ReviewReplyController::class)->only(['index', 'show']);
 Route::middleware(['auth', 'buyer'])->group(function () {
     Route::resource('payments', PaymentController::class)->only(['index', 'show']);
+    Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+    Route::post('/payments/{payment}/confirm', [PaymentController::class, 'confirm'])->name('payments.confirm');
     Route::resource('payment-methods', PaymentMethodController::class)->only(['index', 'show']);
 });
 Route::resource('profiles', ProfileController::class)
