@@ -16,7 +16,9 @@
         @php
             $imageUrl = str_starts_with($product->image, 'http')
                 ? $product->image
-                : asset(ltrim($product->image, '/'));
+                : (str_starts_with($product->image, 'products/')
+                    ? asset('storage/' . $product->image)
+                    : asset(ltrim($product->image, '/')));
         @endphp
 
         <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="200">
