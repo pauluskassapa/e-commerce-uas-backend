@@ -9,11 +9,21 @@
                 <p class="review-kicker">Ulasan pembeli</p>
                 <h2 id="review-list-title">Review Produk</h2>
             </div>
-            <div class="review-count">
-                <strong>{{ $reviews->count() }}</strong>
-                <span>review</span>
+            <div class="review-heading-actions">
+                @auth
+                    @if (auth()->user()->role === 'buyer')
+                        <a class="review-action" href="{{ route('reviews.create') }}">Tulis Review</a>
+                    @endif
+                @endauth
+
+                <div class="review-count">
+                    <strong>{{ $reviews->count() }}</strong>
+                    <span>review</span>
+                </div>
             </div>
         </div>
+
+        @include('reviews.partials.feedback')
 
         <div class="review-table-shell">
             <table class="review-table">
