@@ -55,7 +55,6 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 });
-
 Route::get('/products/{category:slug}', [ProductController::class, 'byCategory'])
     ->where('category', '^(?!create$)(?![0-9]+$)[A-Za-z0-9-]+$')
     ->name('products.by-category');

@@ -48,6 +48,21 @@
             text-decoration:none;
         }
 
+        .button-logout{
+            padding:8px 20px;
+            background:#ef4444;
+            color:white;
+            border:0;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        .user-info{
+            color:white;
+            font-weight:bold;
+            align-self:center;
+        }
+
         .tabel-kategori{
             display:flex;
             gap:30px;
@@ -69,13 +84,26 @@
         </div>
 
         <div class="menu-kanan">
-            <a href="{{ route('login') }}" class="button-login">
-                Masuk
-            </a>
+            @guest
+                <a href="{{ route('login') }}" class="button-login">
+                    Masuk
+                </a>
 
-            <a href="{{ route('register') }}" class="button-daftar">
-                Daftar
-            </a>
+                <a href="{{ route('register') }}" class="button-daftar">
+                    Daftar
+                </a>
+            @endguest
+
+            @auth
+                <span class="user-info">
+                    {{ auth()->user()->name }} ({{ auth()->user()->role }})
+                </span>
+
+                <form method="post" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="button-logout">Logout</button>
+                </form>
+            @endauth
         </div>
 
     </div>

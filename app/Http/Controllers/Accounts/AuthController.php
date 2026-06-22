@@ -62,22 +62,21 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
-            'role' => ['required', Rule::in(['buyer', 'seller'])],
         ]);
 
         $remember = $request->boolean('remember');
 
         if (! Auth::attempt($credentials, $remember)) {
             return back()
-                ->withErrors(['email' => 'Email, password, atau role tidak sesuai.'])
-                ->onlyInput('email', 'role');
+                ->withErrors(['email' => 'Email atau password tidak sesuai.'])
+                ->onlyInput('email');
         }
 
         $request->session()->regenerate();
 
         return redirect()
             ->intended(route('dashboard'))
-            ->with('success', 'Login sebagai ' . $credentials['role'] . ' berhasil.');
+            ->with('success', 'Login sebagai ' . $request->user()->role . ' berhasil.');
     }
 
     public function logout(Request $request): RedirectResponse
