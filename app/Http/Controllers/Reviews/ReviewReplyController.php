@@ -137,7 +137,7 @@ class ReviewReplyController extends Controller
         $reviewReply->delete();
 
         return response()->json([
-            'message' => 'balasan review berhasil dihapus.',
+            'message' => 'Balasan review berhasil dihapus.',
         ]);
     }
 
