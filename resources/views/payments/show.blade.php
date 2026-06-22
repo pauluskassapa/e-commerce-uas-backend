@@ -47,6 +47,17 @@
 
     <br>
 
+    @if($payment->status === 'pending')
+    <form
+        action="{{ route('payments.confirm', $payment) }}"method="POST">
+        @csrf
+        <button type="submit">
+            Konfirmasi Pembayaran
+        </button>
+    </form>
+    <br>
+    @endif
+
     <a href="{{ route('payments.index') }}">
         Kembali ke Daftar Payment
     </a>

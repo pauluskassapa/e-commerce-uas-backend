@@ -3,6 +3,12 @@
 @section('content')
     <h1>Daftar Payment</h1>
 
+    <a href="{{ route('payments.create') }}">
+        Buat Payment
+    </a>
+
+    <br><br>
+
     <table border="1" cellpadding="6">
         <tr>
             <th>ID</th>

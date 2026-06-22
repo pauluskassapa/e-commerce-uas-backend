@@ -2,7 +2,7 @@
 
 @section('content')
     <h2>Products</h2>
-    
+
     @if (isset($selectedCategoryName))
         <p>Menampilkan produk kategori: {{ $selectedCategoryName }}</p>
     @endif
@@ -58,6 +58,7 @@
     <table border="1" cellpadding="6">
         <tr>
             <th>ID</th>
+            <th>Image</th>
             <th>Name</th>
             <th>Category</th>
             <th>Price</th>
@@ -69,6 +70,21 @@
         @forelse ($products as $product)
             <tr>
                 <td>{{ $product->id }}</td>
+                <td>
+                    @if ($product->image)
+                        @php
+                            $imageUrl = str_starts_with($product->image, 'http')
+                                ? $product->image
+                                : (str_starts_with($product->image, 'products/')
+                                    ? asset('storage/' . $product->image)
+                                    : asset(ltrim($product->image, '/')));
+                        @endphp
+
+                        <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="80">
+                    @else
+                        -
+                    @endif
+                </td>
                 <td>{{ $product->name }}</td>
                 <td>{{ $product->category?->name ?? '-' }}</td>
                 <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
@@ -101,7 +117,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="7">Belum ada data produk.</td>
+                <td colspan="8">Belum ada data produk.</td>
             </tr>
         @endforelse
     </table>

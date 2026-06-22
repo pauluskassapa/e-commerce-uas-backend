@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -43,12 +44,16 @@ class ProductController extends Controller
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
-            'image' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
         $validated['slug'] = Str::slug($validated['name']) . '-' . time();
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        }
 
         Product::create($validated);
 
@@ -56,11 +61,16 @@ class ProductController extends Controller
     }
 
     public function show(Product $product): View
-{
-    $product->load('category');
+    {
+        $product->load([
+            'category',
+            'reviews' => fn ($query) => $query
+                ->with(['user', 'replies.user'])
+                ->latest(),
+        ]);
 
-    return view('products.show', compact('product'));
-}
+        return view('products.show', compact('product'));
+    }
 
     public function edit(Product $product): View
     {
@@ -78,7 +88,7 @@ class ProductController extends Controller
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
-            'image' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -87,6 +97,17 @@ class ProductController extends Controller
         }
 
         $validated['is_active'] = $request->boolean('is_active');
+
+        if ($request->hasFile('image')) {
+            if ($product->image && str_starts_with($product->image, 'products/')) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        } else {
+            unset($validated['image']);
+        }
+
         $product->update($validated);
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');

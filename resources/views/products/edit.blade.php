@@ -13,7 +13,7 @@
     </div>
 @endif
 
-    <form method="post" action="{{ route('products.update', $product) }}">
+    <form method="post" action="{{ route('products.update', $product) }}" enctype="multipart/form-data">
         @csrf
         @method('put')
 
@@ -30,13 +30,49 @@
         </label><br>
         <label>Harga <input type="number" name="price" value="{{ old('price', $product->price) }}"></label><br>
         <label>Stok <input type="number" name="stock" value="{{ old('stock', $product->stock) }}"></label><br>
-        <label>Gambar <input type="text" name="image" value="{{ old('image', $product->image) }}"></label><br>
+        <label>Gambar Produk</label>
+        <label class="upload-box" for="product-image">
+            <span class="upload-plus">+</span>
+            <span class="upload-text">Ganti Foto</span>
+            <small>Pilih dari galeri/file</small>
+
+            @if ($product->image)
+                @php
+                    $imageUrl = str_starts_with($product->image, 'http')
+                        ? $product->image
+                        : (str_starts_with($product->image, 'products/')
+                            ? asset('storage/' . $product->image)
+                            : asset(ltrim($product->image, '/')));
+                @endphp
+
+                <img id="image-preview" class="upload-preview" src="{{ $imageUrl }}" alt="Preview gambar produk" style="display: block;">
+            @else
+                <img id="image-preview" class="upload-preview" alt="Preview gambar produk">
+            @endif
+        </label>
+        <input id="product-image" class="upload-input" type="file" name="image" accept="image/*" onchange="previewProductImage(event)">
+        <br>
+
         <label>Deskripsi <textarea name="description">{{ old('description', $product->description) }}</textarea></label><br>
         <label><input type="checkbox" name="is_active" value="1" @checked($product->is_active)> Aktif</label><br>
 
         <p>
-    <button type="submit">Update</button>
-    <a href="{{ route('products.index') }}">Kembali</a>
+            <button type="submit">Update</button>
+            <a href="{{ route('products.index') }}">Kembali</a>
         </p>
     </form>
+
+    <script>
+        function previewProductImage(event) {
+            const preview = document.getElementById('image-preview');
+            const file = event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        }
+    </script>
 @endsection

@@ -1,25 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>Review Replies</h2>
-    <p>TODO: isi balasan admin/seller terhadap review user.</p>
+    @include('reviews.partials.styles')
 
-    <table border="1" cellpadding="6">
-        <tr>
-            <th>ID</th>
-            <th>Review ID</th>
-            <th>User</th>
-            <th>Message</th>
-        </tr>
-        @forelse ($replies as $reply)
-            <tr>
-                <td>{{ $reply->id }}</td>
-                <td>{{ $reply->review_id }}</td>
-                <td>{{ $reply->user?->name ?? '-' }}</td>
-                <td>{{ $reply->message }}</td>
-            </tr>
-        @empty
-            <tr><td colspan="4">Belum ada balasan review.</td></tr>
-        @endforelse
-    </table>
+    <section class="review-page" aria-labelledby="reply-list-title">
+        <div class="review-heading">
+            <div>
+                <p class="review-kicker">Tanggapan seller</p>
+                <h2 id="reply-list-title">Balasan Review</h2>
+            </div>
+            <div class="review-count">
+                <strong>{{ $replies->count() }}</strong>
+                <span>balasan</span>
+            </div>
+        </div>
+
+        <div class="review-table-shell">
+            <table class="review-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Review</th>
+                        <th>Seller</th>
+                        <th>Pesan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($replies as $reply)
+                        <tr>
+                            <td>#{{ $reply->id }}</td>
+                            <td>Review #{{ $reply->review_id }}</td>
+                            <td>
+                                {{ $reply->user?->name ?? '-' }}
+                                <span class="review-seller-label">Seller</span>
+                            </td>
+                            <td class="review-comment-cell">{{ $reply->message }}</td>
+                            <td>
+                                <a class="review-action" href="{{ route('review-replies.show', $reply) }}">Detail</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td class="review-empty" colspan="5">Belum ada balasan review.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
 @endsection
