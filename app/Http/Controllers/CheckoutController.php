@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
@@ -47,13 +48,21 @@ class CheckoutController extends Controller
             ]);
         }
 
+        Payment::create([
+            'user_id' => Auth::id(),
+            'cart_id' => $cart->id,
+            'amount' => $total,
+            'status' => 'pending',
+            'notes' => 'Menunggu pembayaran'
+        ]);
+
         $cart->items()->delete();
 
         return redirect()
-            ->route('orders.show',$order)
+            ->route('payments.index')
             ->with(
                 'success',
-                'Checkout berhasil'
+                'Checkout berhasil. Silakan lakukan pembayaran.'
             );
     }
 }
