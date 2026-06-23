@@ -2,43 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Order;
+use App\Models\Payment;
 
 class CheckoutController extends Controller
 {
-    public function store()
+    public function store(Request $request)
     {
-        $cart = Cart::with('items.product')
-            ->where('user_id', Auth::id())
-            ->where('status', 'active')
-            ->first();
+        DB::transaction(function () use ($request) {
 
-        if (!$cart || $cart->items->isEmpty()) {
-            return back()->with(
-                'error',
-                'Cart kosong'
-            );
-        }
+            $cart = auth()->user()
+                ->carts()
+                ->where('status', 'active')
+                ->with('items.product')
+                ->first();
 
-        foreach ($cart->items as $item) {
-            if (!$item->product) {
-                return back()->with('error', 'Ada produk di cart yang sudah tidak tersedia.');
+            if (!$cart || $cart->items->count() == 0) {
+                return;
             }
 
-            if ($item->quantity > $item->product->stock) {
-                return back()->with(
-                    'error',
-                    'Stock ' . $item->product->name . ' kurang. Sisa stock: ' . $item->product->stock
-                );
-            }
-        }
+            $total = $cart->items->sum(function ($item) {
+                return $item->price * $item->quantity;
+            });
 
-        return redirect()
-            ->route('payments.create', ['cart_id' => $cart->id])
-            ->with(
-                'success',
-                'Checkout berhasil. Pilih metode pembayaran.'
-            );
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'total_amount' => $total,
+                'status' => 'pending',
+            ]);
+
+            foreach ($cart->items as $item) {
+                $order->items()->create([
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                ]);
+            }
+
+            Payment::create([
+                'user_id' => auth()->id(),
+                'order_id' => $order->id,
+                'payment_method_id' => $request->payment_method_id,
+                'amount' => $total,
+                'status' => 'pending',
+                'notes' => 'Menunggu pembayaran',
+            ]);
+
+            $cart->update([
+                'status' => 'checked_out'
+            ]);
+
+            $cart->items()->delete();
+        });
+
+        return redirect()->route('orders.index')
+            ->with('success', 'Checkout berhasil, silakan lakukan pembayaran');
     }
 }
