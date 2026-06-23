@@ -1,7 +1,7 @@
 <?php
-
+ 
 namespace App\Http\Controllers\Catalog;
-
+ 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-
+ 
 class ProductController extends Controller
 {
+    private const MAX_PRODUCT_PRICE = 999999999.99;
+ 
     public function index(Request $request): View
     {
         $products = Product::with('category')
@@ -22,44 +24,44 @@ class ProductController extends Controller
             ->when($request->max_price, fn ($query, $maxPrice) => $query->where('price', '<=', $maxPrice))
             ->latest()
             ->get();
-
+ 
         return view('products.index', [
             'products' => $products,
             'categories' => Category::orderBy('name')->get(),
         ]);
     }
-
+ 
     public function create(): View
     {
         return view('products.create', [
             'categories' => Category::orderBy('name')->get(),
         ]);
     }
-
+ 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'category_id' => ['nullable', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'price' => ['required', 'numeric', 'min:0', 'max:' . self::MAX_PRODUCT_PRICE],
             'stock' => ['required', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-
+ 
         $validated['slug'] = Str::slug($validated['name']) . '-' . time();
         $validated['is_active'] = $request->boolean('is_active');
-
+ 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
-
+ 
         Product::create($validated);
-
+ 
         return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
-
+ 
     public function show(Product $product): View
     {
         $product->load([
@@ -68,10 +70,10 @@ class ProductController extends Controller
                 ->with(['user', 'replies.user'])
                 ->latest(),
         ]);
-
+ 
         return view('products.show', compact('product'));
     }
-
+ 
     public function edit(Product $product): View
     {
         return view('products.edit', [
@@ -79,47 +81,47 @@ class ProductController extends Controller
             'categories' => Category::orderBy('name')->get(),
         ]);
     }
-
+ 
     public function update(Request $request, Product $product): RedirectResponse
     {
         $validated = $request->validate([
             'category_id' => ['nullable', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'price' => ['required', 'numeric', 'min:0', 'max:' . self::MAX_PRODUCT_PRICE],
             'stock' => ['required', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-
+ 
         if ($product->name !== $validated['name']) {
             $validated['slug'] = Str::slug($validated['name']) . '-' . time();
         }
-
+ 
         $validated['is_active'] = $request->boolean('is_active');
-
+ 
         if ($request->hasFile('image')) {
             if ($product->image && str_starts_with($product->image, 'products/')) {
                 Storage::disk('public')->delete($product->image);
             }
-
+ 
             $validated['image'] = $request->file('image')->store('products', 'public');
         } else {
             unset($validated['image']);
         }
-
+ 
         $product->update($validated);
-
+ 
         return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
     }
-
+ 
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
-
+ 
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
-
+ 
     public function byCategory(Category $category): View
 {
     return view('products.index', [
@@ -132,3 +134,4 @@ class ProductController extends Controller
     ]);
 }
 }
+ 
