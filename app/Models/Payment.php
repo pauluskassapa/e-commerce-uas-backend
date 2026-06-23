@@ -9,7 +9,7 @@ class Payment extends Model
 {
     protected $fillable = [
         'user_id',
-        'cart_id',
+        'order_id',
         'payment_method_id',
         'amount',
         'shipping_address',
@@ -31,9 +31,9 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function cart(): BelongsTo
+    public function order(): BelongsTo
     {
-        return $this->belongsTo(Cart::class);
+        return $this->belongsTo(Order::class);
     }
 
     public function method(): BelongsTo
