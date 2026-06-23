@@ -23,7 +23,7 @@ class ProductController extends Controller
             ->when($request->min_price, fn ($query, $minPrice) => $query->where('price', '>=', $minPrice))
             ->when($request->max_price, fn ($query, $maxPrice) => $query->where('price', '<=', $maxPrice))
             ->latest()
-            ->pagninate(10)
+            ->paginate(10);
  
         return view('products.index', [
             'products' => $products,
