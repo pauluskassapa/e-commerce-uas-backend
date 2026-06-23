@@ -13,7 +13,11 @@ class CheckoutController extends Controller
     {
         DB::transaction(function () use ($request) {
 
-            $cart = auth()->user()->cart()->with('items.product')->first();
+            $cart = auth()->user()
+                ->carts()
+                ->where('status', 'active')
+                ->with('items.product')
+                ->first();
 
             if (!$cart || $cart->items->count() == 0) {
                 return;
@@ -32,8 +36,8 @@ class CheckoutController extends Controller
             foreach ($cart->items as $item) {
                 $order->items()->create([
                     'product_id' => $item->product_id,
-                    'price' => $item->price,
                     'quantity' => $item->quantity,
+                    'price' => $item->price,
                 ]);
             }
 
@@ -46,9 +50,14 @@ class CheckoutController extends Controller
                 'notes' => 'Menunggu pembayaran',
             ]);
 
+            $cart->update([
+                'status' => 'checked_out'
+            ]);
+
             $cart->items()->delete();
         });
 
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.index')
+            ->with('success', 'Checkout berhasil, silakan lakukan pembayaran');
     }
 }
