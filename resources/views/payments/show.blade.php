@@ -20,7 +20,6 @@
             <td>{{ $payment->user?->name ?? '-' }}</td>
         </tr>
 
-        {{-- DIUBAH cart → order --}}
         <tr>
             <th>Order</th>
             <td>#{{ $payment->order?->id ?? '-' }}</td>
@@ -59,7 +58,6 @@
 
     <br>
 
-    {{-- DIUBAH: cart items → order items --}}
     @if ($payment->order?->items?->isNotEmpty())
         <h3>Barang</h3>
 
@@ -99,11 +97,9 @@
         <br>
     @endif
 
-    {{-- BUTTON KONFIRMASI --}}
     @if($payment->status === 'pending')
         <form action="{{ route('payments.confirm', $payment) }}" method="POST">
             @csrf
-            @method('PUT')
             <button type="submit">
                 Konfirmasi Pembayaran
             </button>
