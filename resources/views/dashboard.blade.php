@@ -64,13 +64,42 @@
         }
 
         .tabel-kategori{
-            display:flex;
-            gap:30px;
-            margin-left:50px;
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap:28px;
+            margin:30px 50px;
+            max-width:1000px;
         }
 
         .kategori{
             text-align:center;
+        }
+
+        .kategori a{
+            display:block;
+            text-decoration:none;
+            color:#111827;
+        }
+
+        .kategori img{
+            width:150px;
+            height:150px;
+            object-fit:cover;
+            border-radius:18px;
+            border:1px solid #e5e7eb;
+            background:#f8fafc;
+            box-shadow:0 6px 16px rgba(15,23,42,.12);
+            transition:.2s;
+        }
+
+        .kategori a:hover img{
+            transform:translateY(-3px);
+            box-shadow:0 10px 22px rgba(15,23,42,.18);
+        }
+
+        .kategori h2{
+            margin-top:12px;
+            font-size:24px;
         }
     </style>
 </head>
@@ -113,25 +142,46 @@
         <p>Halaman utama toko online.</p>
     </div>
 
-    <div class = "tabel-kategori">
-       
-            
-              <div class = "kategori">
-                    <a href="{{ route('products.by-category', 'baju') }}">
-                    <img src = "https://tse2.mm.bing.net/th/id/OIP.Tl425LnCRC-bUDIORYqkbgHaHa?pid=Api&P=0&h=180" width = "150px" height = "150px">
-                    </a>
-                   <h2>Baju</h2>
-               
-                </div>
-                <div class = "kategori">
-                    <a href="{{ route('products.by-category', 'elektronik') }}">
-                    <img src = "https://down-id.img.susercontent.com/file/id-50009109-0bd6a9ebd0f2ae9b7e8b9ce7d89897d6@resize_w640_nl.webp" width = "150px" height = "150px">
-                    </a>
-                    <h2>Elektronik</h2>
-                         
-                </div>
-              
-        </div>
+    @php
+        $categories = [
+            [
+                'name' => 'Pakaian',
+                'slug' => 'baju',
+                'image' => 'assets/categories/pakaian.svg',
+            ],
+            [
+                'name' => 'Elektronik',
+                'slug' => 'elektronik',
+                'image' => 'assets/categories/elektronik.svg',
+            ],
+            [
+                'name' => 'Makanan & Minuman',
+                'slug' => 'makanan-minuman',
+                'image' => 'assets/categories/makanan-minuman.svg',
+            ],
+            [
+                'name' => 'Aksesoris',
+                'slug' => 'aksesoris',
+                'image' => 'assets/categories/aksesoris.svg',
+            ],
+            [
+                'name' => 'Peralatan Rumah',
+                'slug' => 'peralatan-rumah',
+                'image' => 'assets/categories/peralatan-rumah.svg',
+            ],
+        ];
+    @endphp
+
+    <div class="tabel-kategori">
+        @foreach ($categories as $category)
+            <div class="kategori">
+                <a href="{{ route('products.by-category', $category['slug']) }}">
+                    <img src="{{ asset($category['image']) }}" alt="{{ $category['name'] }}">
+                    <h2>{{ $category['name'] }}</h2>
+                </a>
+            </div>
+        @endforeach
+    </div>
 
 </body>
 </html>
