@@ -44,7 +44,7 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0', 'max:' . self::MAX_PRODUCT_PRICE],
+            'price' => ['nullable', 'numeric', 'min:0', 'max:' . self::MAX_PRODUCT_PRICE],
             'stock' => ['required', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
@@ -88,7 +88,7 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0', 'max:' . self::MAX_PRODUCT_PRICE],
+            'price' => ['nullable', 'numeric', 'min:0', 'max:' . self::MAX_PRODUCT_PRICE],
             'stock' => ['required', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
@@ -99,6 +99,9 @@ class ProductController extends Controller
         }
  
         $validated['is_active'] = $request->boolean('is_active');
+        if (! $request->filled('price')) {
+            unset($validated['price']);
+        }
  
         if ($request->hasFile('image')) {
             if ($product->image && str_starts_with($product->image, 'products/')) {
