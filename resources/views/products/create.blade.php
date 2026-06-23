@@ -27,7 +27,21 @@
                 @endforeach
             </select>
         </label><br>
-        <label>Harga <input type="number" name="price" value="{{ old('price') }}"></label><br>
+        <label>Harga
+    <input
+        type="text"
+        id="price_display"
+        value="{{ old('price') ? 'Rp ' . number_format(old('price'), 0, ',', '.') : '' }}"
+        placeholder="Rp 0"
+    >
+
+    <input
+        type="hidden"
+        id="price"
+        name="price"
+        value="{{ old('price') }}"
+    >
+</label><br>
         <label>Stok <input type="number" name="stock" value="{{ old('stock') }}"></label><br>
         <label>Gambar Produk</label>
         <label class="upload-box" for="product-image">
@@ -63,4 +77,25 @@
             preview.style.display = 'block';
         }
     </script>
+    <script>
+
+    const priceDisplay = document.getElementById('price_display');
+
+    const priceInput = document.getElementById('price');
+ 
+    priceDisplay.addEventListener('input', function () {
+
+        const angka = this.value.replace(/\D/g, '');
+ 
+        priceInput.value = angka;
+ 
+        this.value = angka
+
+            ? 'Rp ' + new Intl.NumberFormat('id-ID').format(angka)
+
+            : '';
+
+    });
+</script>
+ 
 @endsection
