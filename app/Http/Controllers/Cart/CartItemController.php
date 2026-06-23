@@ -11,6 +11,11 @@ class CartItemController extends Controller
 {
     public function store(Product $product)
     {
+        if ($product->stock < 1) {
+            return redirect()->back()
+                ->with('error', 'Stock ' . $product->name . ' kosong.');
+        }
+
         $cart = Cart::firstOrCreate([
             'user_id' => Auth::id(),
             'status' => 'active',
@@ -21,6 +26,11 @@ class CartItemController extends Controller
             ->first();
 
         if ($item) {
+            if ($item->quantity + 1 > $product->stock) {
+                return redirect()->back()
+                    ->with('error', 'Stock ' . $product->name . ' kurang. Sisa stock: ' . $product->stock);
+            }
+
             $item->increment('quantity');
         } else {
             $cart->items()->create([
@@ -47,6 +57,11 @@ class CartItemController extends Controller
             ->first();
 
         if ($item) {
+            if ($item->quantity + 1 > $product->stock) {
+                return redirect()->back()
+                    ->with('error', 'Stock ' . $product->name . ' kurang. Sisa stock: ' . $product->stock);
+            }
+
             $item->increment('quantity');
         }
 

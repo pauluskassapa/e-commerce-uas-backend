@@ -99,6 +99,12 @@ Route::middleware(['auth', 'seller'])->group(function () {
 
 Route::get('/review-replies/{reviewReply}', [ReviewReplyController::class, 'show'])->name('review-replies.show');
 
+Route::middleware('auth')->group(function () {
+    Route::put('/profiles', [ProfileController::class, 'update'])->name('profiles.update');
+    Route::post('/profiles/addresses', [ProfileController::class, 'storeAddress'])->name('profiles.addresses.store');
+    Route::put('/profiles/addresses/{address}', [ProfileController::class, 'updateAddress'])->name('profiles.addresses.update');
+});
+
 Route::resource('profiles', ProfileController::class)
     ->only(['index', 'show'])
     ->middleware('auth');

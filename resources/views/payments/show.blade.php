@@ -36,6 +36,11 @@
         </tr>
 
         <tr>
+            <th>Alamat Pengiriman</th>
+            <td>{{ $payment->shipping_address ?? '-' }}</td>
+        </tr>
+
+        <tr>
             <th>Status</th>
             <td>{{ $payment->status }}</td>
         </tr>

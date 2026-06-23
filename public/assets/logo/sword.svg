@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Pedang Pendekar Store">
+  <rect width="96" height="96" rx="22" fill="#f8fafc"/>
+  <path d="M68 10 78 20 44 54 36 46 68 10Z" fill="#e2e8f0" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M31 51 45 65" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
+  <path d="M25 58 38 45" stroke="#c62424" stroke-width="8" stroke-linecap="round"/>
+  <path d="M19 71 31 59" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="45" cy="51" r="5" fill="#facc15" stroke="#1e293b" stroke-width="3"/>
+</svg>

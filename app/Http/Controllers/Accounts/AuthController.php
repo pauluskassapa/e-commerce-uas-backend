@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Accounts;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserAddress;
 use App\Models\UserProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,13 @@ class AuthController extends Controller
             'role' => $validated['role'],
             'phone' => $validated['phone'],
             'address' => $validated['address'],
+        ]);
+
+        UserAddress::create([
+            'user_id' => $user->id,
+            'label' => 'Alamat Utama',
+            'address' => $validated['address'],
+            'is_default' => true,
         ]);
 
         Auth::login($user);

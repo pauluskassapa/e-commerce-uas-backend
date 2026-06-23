@@ -21,6 +21,19 @@ class CheckoutController extends Controller
             );
         }
 
+        foreach ($cart->items as $item) {
+            if (!$item->product) {
+                return back()->with('error', 'Ada produk di cart yang sudah tidak tersedia.');
+            }
+
+            if ($item->quantity > $item->product->stock) {
+                return back()->with(
+                    'error',
+                    'Stock ' . $item->product->name . ' kurang. Sisa stock: ' . $item->product->stock
+                );
+            }
+        }
+
         return redirect()
             ->route('payments.create', ['cart_id' => $cart->id])
             ->with(

@@ -77,6 +77,13 @@
             border-radius: 6px;
         }
 
+        .payment-address-note {
+            margin: -8px 0 16px;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
         .payment-total {
             display: flex;
             justify-content: space-between;
@@ -163,6 +170,21 @@
                 <form class="payment-panel payment-summary" method="post" action="{{ route('payments.store') }}">
                     @csrf
                     <input type="hidden" name="cart_id" value="{{ $selectedCart->id }}">
+
+                    <label for="shipping_address_id">Alamat Pengiriman</label>
+                    <select id="shipping_address_id" name="shipping_address_id" required>
+                        <option value="">Pilih alamat</option>
+                        @foreach ($addresses as $itemAddress)
+                            <option value="{{ $itemAddress->id }}" @selected((int) old('shipping_address_id', $address?->id) === $itemAddress->id)>
+                                {{ $itemAddress->label }} - {{ $itemAddress->address }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <p class="payment-address-note">
+                        Alamat bisa diubah atau ditambah dari halaman
+                        <a href="{{ route('profiles.index') }}">profile</a>.
+                    </p>
 
                     <label for="payment_method_id">Metode Pembayaran</label>
                     <select id="payment_method_id" name="payment_method_id" required>

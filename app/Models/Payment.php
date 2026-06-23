@@ -12,6 +12,7 @@ class Payment extends Model
         'cart_id',
         'payment_method_id',
         'amount',
+        'shipping_address',
         'status',
         'paid_at',
         'notes',

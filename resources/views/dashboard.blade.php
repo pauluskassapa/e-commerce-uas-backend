@@ -15,6 +15,8 @@
             display:flex;
             justify-content:space-between;
             align-items:center;
+            gap:24px;
+            flex-wrap:wrap;
             padding:15px 40px;
             border-bottom:6px solid #c62424;
             background-color: #1e293b
@@ -24,11 +26,41 @@
             font-size:30px;
             font-weight:bold;
             color:White;
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .logo img{
+            width:50px;
+            height:50px;
+            border-radius:12px;
+            background:white;
+        }
+
+        .dashboard-nav{
+            display:flex;
+            flex-wrap:wrap;
+            gap:12px;
+            align-items:center;
+        }
+
+        .dashboard-nav a{
+            color:white;
+            text-decoration:none;
+            padding:8px 10px;
+            border-radius:6px;
+            font-weight:bold;
+        }
+
+        .dashboard-nav a:hover{
+            background:#334155;
         }
 
         .menu-kanan{
             display:flex;
             gap:10px;
+            align-items:center;
         }
 
         .button-login{
@@ -108,9 +140,19 @@
     <div class="garis">
 
         <div class="logo">      
-            <img src = "https://media.licdn.com/dms/image/v2/D5603AQEaaH8bWKgD-A/profile-displayphoto-shrink_200_200/B56Zjhg5zeHcAg-/0/1756130156250?e=2147483647&v=beta&t=nnT1i6FjaRIygiaBSpq-UpuAmqQ8AGiEPKrLuHJnJVQ" width = "50px" height = "50px" style="border-radius: 50%; margin-right: 10px;">
+            <img src="{{ asset('assets/logo/sword.svg') }}" alt="Logo Pendekar Store">
             Pendekar Store
         </div>
+
+        <nav class="dashboard-nav">
+            <a href="{{ route('dashboard') }}">Home</a>
+            <a href="{{ route('products.index') }}">Products</a>
+            <a href="{{ route('categories.index') }}">Categories</a>
+            <a href="{{ route('reviews.index') }}">Reviews</a>
+            <a href="{{ route('carts.index') }}">Cart</a>
+            <a href="{{ route('payments.index') }}">Payments</a>
+            <a href="{{ route('profiles.index') }}">Profile</a>
+        </nav>
 
         <div class="menu-kanan">
             @guest

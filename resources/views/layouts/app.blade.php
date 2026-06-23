@@ -31,6 +31,19 @@
             margin-bottom: 15px;
         }
 
+        .site-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .site-logo img {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: white;
+        }
+
         nav {
             display: flex;
             flex-wrap: wrap;
@@ -77,6 +90,14 @@
         .success-message {
             background: #dcfce7;
             color: #166534;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -143,7 +164,10 @@
 <body>
 
 <header>
-    <h1>⚔️ PENDEKAR STORE</h1>
+    <h1 class="site-logo">
+        <img src="{{ asset('assets/logo/sword.svg') }}" alt="Logo Pendekar Store">
+        PENDEKAR STORE
+    </h1>
 
     <nav>
         <a href="{{ route('dashboard') }}">Home</a>
@@ -183,6 +207,12 @@
     @if(session('success'))
         <div class="success-message">
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="error-message">
+            {{ session('error') }}
         </div>
     @endif
 
