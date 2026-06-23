@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -21,11 +22,30 @@ class ReviewController extends Controller
         ]);
     }
 
+    public function create(Request $request): View
+    {
+        $products = $this->reviewableProducts($request->user());
+        $selectedProductId = (int) $request->query('product_id');
+
+        return view('reviews.create', compact('products', 'selectedProductId'));
+    }
+
     public function show(Review $review): View
     {
         $review->load(['user', 'product', 'replies.user']);
 
         return view('reviews.show', compact('review'));
+    }
+
+    public function edit(Request $request, Review $review): View
+    {
+        if ($request->user()->id !== $review->user_id) {
+            abort(403, 'User hanya bisa mengubah review miliknya sendiri.');
+        }
+
+        $review->load('product');
+
+        return view('reviews.edit', compact('review'));
     }
 
     public function apiIndex(Request $request): JsonResponse
@@ -63,7 +83,7 @@ class ReviewController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'user_id' => $this->userIdRules($request),
@@ -75,15 +95,11 @@ class ReviewController extends Controller
         $user = $this->resolveUser($request, $validated['user_id'] ?? null);
 
         if ($user->role !== 'buyer') {
-            return response()->json([
-                'message' => 'Hanya buyer yang bisa membuat review.',
-            ], 403);
+            return $this->failedResponse($request, 'Hanya buyer yang bisa membuat review.', 403);
         }
 
         if (! $this->hasPaidForProduct($user, $validated['product_id'])) {
-            return response()->json([
-                'message' => 'Review hanya dapat dibuat setelah produk dibayar.',
-            ], 403);
+            return $this->failedResponse($request, 'Review hanya dapat dibuat setelah produk dibayar.', 403);
         }
 
         if (Review::where('user_id', $user->id)
@@ -101,13 +117,19 @@ class ReviewController extends Controller
             'comment' => $validated['comment'] ?? null,
         ]);
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('reviews.show', $review)
+                ->with('success', 'Review berhasil ditambahkan.');
+        }
+
         return response()->json([
             'message' => 'Review berhasil ditambahkan.',
             'data' => $review->load(['user', 'product']),
         ], 201);
     }
 
-    public function update(Request $request, Review $review): JsonResponse
+    public function update(Request $request, Review $review): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'user_id' => $this->userIdRules($request),
@@ -118,21 +140,23 @@ class ReviewController extends Controller
         $user = $this->resolveUser($request, $validated['user_id'] ?? null);
 
         if ($user->role !== 'buyer') {
-            return response()->json([
-                'message' => 'Hanya buyer yang bisa mengatur review.',
-            ], 403);
+            return $this->failedResponse($request, 'Hanya buyer yang bisa mengatur review.', 403);
         }
 
         if ($user->id !== $review->user_id) {
-            return response()->json([
-                'message' => 'User hanya bisa mengubah review miliknya sendiri.',
-            ], 403);
+            return $this->failedResponse($request, 'User hanya bisa mengubah review miliknya sendiri.', 403);
         }
 
         $review->update([
             'rating' => $validated['rating'] ?? $review->rating,
             'comment' => array_key_exists('comment', $validated) ? $validated['comment'] : $review->comment,
         ]);
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('reviews.show', $review)
+                ->with('success', 'Review berhasil diperbarui.');
+        }
 
         return response()->json([
             'message' => 'Review berhasil diperbarui.',
@@ -191,5 +215,31 @@ class ReviewController extends Controller
             ->where('status', 'paid')
             ->whereHas('cart.items', fn ($query) => $query->where('product_id', $productId))
             ->exists();
+    }
+
+    private function reviewableProducts(User $user)
+    {
+        $paidCartIds = Payment::where('user_id', $user->id)
+            ->where('status', 'paid')
+            ->pluck('cart_id');
+
+        $reviewedProductIds = Review::where('user_id', $user->id)->pluck('product_id');
+
+        return Product::whereHas(
+            'cartItems',
+            fn ($query) => $query->whereIn('cart_id', $paidCartIds)
+        )
+            ->whereNotIn('id', $reviewedProductIds)
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function failedResponse(Request $request, string $message, int $status): JsonResponse|RedirectResponse
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], $status);
+        }
+
+        return back()->withErrors(['review' => $message])->withInput();
     }
 }

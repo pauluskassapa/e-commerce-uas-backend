@@ -74,8 +74,28 @@ Route::middleware(['auth', 'seller'])->group(function () {
 
 Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
 
-Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
-Route::resource('review-replies', ReviewReplyController::class)->only(['index', 'show']);
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+
+Route::middleware(['auth', 'buyer'])->group(function () {
+    Route::get('/reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::patch('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+});
+
+Route::get('/reviews/{review}', [ReviewController::class, 'show'])->name('reviews.show');
+
+Route::get('/review-replies', [ReviewReplyController::class, 'index'])->name('review-replies.index');
+
+Route::middleware(['auth', 'seller'])->group(function () {
+    Route::post('/review-replies', [ReviewReplyController::class, 'store'])->name('review-replies.store');
+    Route::get('/review-replies/{reviewReply}/edit', [ReviewReplyController::class, 'edit'])->name('review-replies.edit');
+    Route::put('/review-replies/{reviewReply}', [ReviewReplyController::class, 'update'])->name('review-replies.update');
+    Route::patch('/review-replies/{reviewReply}', [ReviewReplyController::class, 'update'])->name('review-replies.update');
+});
+
+Route::get('/review-replies/{reviewReply}', [ReviewReplyController::class, 'show'])->name('review-replies.show');
 
 Route::resource('profiles', ProfileController::class)
     ->only(['index', 'show'])
