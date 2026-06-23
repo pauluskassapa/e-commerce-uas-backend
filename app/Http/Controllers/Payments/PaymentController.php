@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
 {
@@ -17,6 +18,7 @@ class PaymentController extends Controller
             'cart',
             'method'
         ])
+        ->where('user_id', auth()->id())
         ->latest()
         ->get();
 
@@ -28,9 +30,13 @@ class PaymentController extends Controller
 
     public function show(Payment $payment)
     {
+        if ($payment->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $payment->load([
             'user',
-            'cart',
+            'cart.items.product',
             'method'
         ]);
 
@@ -40,20 +46,34 @@ class PaymentController extends Controller
         );
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $methods = PaymentMethod::where(
             'is_active',
             true
         )->get();
 
-        $carts = Cart::all();
+        $carts = Cart::with('items.product')
+            ->where('user_id', auth()->id())
+            ->where('status', 'active')
+            ->whereHas('items')
+            ->latest()
+            ->get();
+
+        $selectedCart = $carts->firstWhere('id', (int) $request->query('cart_id'))
+            ?? $carts->first();
+
+        $total = $selectedCart
+            ? $selectedCart->items->sum(fn ($item) => $item->price * $item->quantity)
+            : 0;
 
         return view(
             'payments.create',
             compact(
                 'methods',
-                'carts'
+                'carts',
+                'selectedCart',
+                'total'
             )
         );
     }
@@ -61,35 +81,60 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'cart_id' => 'nullable|exists:carts,id',
+            'cart_id' => [
+                'required',
+                Rule::exists('carts', 'id')->where('user_id', auth()->id()),
+            ],
             'payment_method_id' => 'required|exists:payment_methods,id',
-            'amount' => 'required|numeric|min:1',
         ]);
 
-        Payment::create([
+        $cart = Cart::with('items')
+            ->where('user_id', auth()->id())
+            ->where('status', 'active')
+            ->findOrFail($request->cart_id);
+
+        if ($cart->items->isEmpty()) {
+            return back()
+                ->withErrors(['cart_id' => 'Cart kosong.'])
+                ->withInput();
+        }
+
+        $total = $cart->items->sum(fn ($item) => $item->price * $item->quantity);
+
+        $payment = Payment::create([
             'user_id' => auth()->id(),
-            'cart_id' => $request->cart_id,
+            'cart_id' => $cart->id,
             'payment_method_id' => $request->payment_method_id,
-            'amount' => $request->amount,
+            'amount' => $total,
             'status' => 'pending',
             'notes' => 'Menunggu pembayaran'
         ]);
 
         return redirect()
-            ->route('payments.index');
+            ->route('payments.show', $payment)
+            ->with('success', 'Payment dibuat. Silakan konfirmasi pembayaran.');
     }
 
     public function confirm(Payment $payment)
     {
+        if ($payment->user_id !== auth()->id()) {
+            abort(403);
+        }
+
         $payment->update([
             'status' => 'paid',
             'paid_at' => now(),
+            'notes' => 'Pembayaran berhasil',
+        ]);
+
+        $payment->cart?->update([
+            'status' => 'completed',
         ]);
 
         return redirect()
             ->route(
-                'payments.show',
-                $payment
-            );
+                'payments.index'
+            )
+            ->with('success', 'Pembayaran berhasil.');
     }
 }

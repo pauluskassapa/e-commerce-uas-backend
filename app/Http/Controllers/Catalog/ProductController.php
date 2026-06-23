@@ -124,6 +124,7 @@ class ProductController extends Controller
  
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
+<<<<<<< HEAD
 
     public function byCategory(string $categorySlug): View
     {
@@ -140,3 +141,19 @@ class ProductController extends Controller
     }
 }
  
+=======
+ 
+    public function byCategory(Category $category): View
+{
+    return view('products.index', [
+        'products' => Product::with('category')
+            ->where('category_id', $category->id)
+            ->latest()
+            ->get(),
+        'categories' => Category::orderBy('name')->get(),
+        'selectedCategory' => $category,
+    ]);
+}
+}
+ 
+>>>>>>> 516b1a21f5a7d754c5189c1bfb83809da915103c

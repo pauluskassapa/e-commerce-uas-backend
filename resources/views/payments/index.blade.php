@@ -3,9 +3,11 @@
 @section('content')
     <h1>Daftar Payment</h1>
 
-    <a href="{{ route('payments.create') }}">
-        Buat Payment
-    </a>
+    @if (session('success'))
+        <p style="color: #15803d;">
+            {{ session('success') }}
+        </p>
+    @endif
 
     <br><br>
 
@@ -34,6 +36,13 @@
                     <a href="{{ route('payments.show', $payment) }}">
                         Detail
                     </a>
+
+                    @if ($payment->status === 'paid')
+                        |
+                        <a href="{{ route('reviews.create') }}">
+                            Beri Review
+                        </a>
+                    @endif
                 </td>
             </tr>
         @empty

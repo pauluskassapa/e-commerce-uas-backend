@@ -62,6 +62,7 @@
             <th>Name</th>
             <th>Category</th>
             <th>Price</th>
+            <th>Rating</th>
             <th>Stock</th>
             <th>Status</th>
             <th>Action</th>
@@ -89,6 +90,17 @@
                 <td>{{ $product->name }}</td>
                 <td>{{ $product->category?->name ?? '-' }}</td>
                 <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
+                <td>
+                    @php
+                        $reviewCount = $product->reviewCount();
+                    @endphp
+
+                    @if ($reviewCount > 0)
+                        {{ $product->averageRating() }}/5 ({{ $reviewCount }})
+                    @else
+                        Belum ada
+                    @endif
+                </td>
                 <td>{{ $product->stock }}</td>
                 <td>{{ $product->is_active ? 'Aktif' : 'Nonaktif' }}</td>
                 <td>
@@ -118,7 +130,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="8">Belum ada data produk.</td>
+                <td colspan="9">Belum ada data produk.</td>
             </tr>
         @endforelse
     </table>
