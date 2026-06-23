@@ -124,22 +124,6 @@ class ProductController extends Controller
  
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
-<<<<<<< HEAD
-
-    public function byCategory(string $categorySlug): View
-    {
-        $category = Category::where('slug', $categorySlug)->first();
-
-        return view('products.index', [
-            'products' => $category
-                ? Product::with('category')->where('category_id', $category->id)->latest()->get()
-                : collect(),
-            'categories' => Category::orderBy('name')->get(),
-            'selectedCategory' => $category,
-            'selectedCategoryName' => $category?->name ?? Str::headline(str_replace('-', ' ', $categorySlug)),
-        ]);
-    }
-=======
  
     public function byCategory(Category $category): View
 {
@@ -152,6 +136,5 @@ class ProductController extends Controller
         'selectedCategory' => $category,
     ]);
 }
->>>>>>> 4bb460560d24b4802df44523b87059f3e710ba5e
 }
  
