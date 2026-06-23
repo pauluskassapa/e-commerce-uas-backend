@@ -77,4 +77,25 @@
             preview.style.display = 'block';
         }
     </script>
+    <script>
+
+    const priceDisplay = document.getElementById('price_display');
+
+    const priceInput = document.getElementById('price');
+ 
+    priceDisplay.addEventListener('input', function () {
+
+        const angka = this.value.replace(/\D/g, '');
+ 
+        priceInput.value = angka;
+ 
+        this.value = angka
+
+            ? 'Rp ' + new Intl.NumberFormat('id-ID').format(angka)
+
+            : '';
+
+    });
+</script>
+ 
 @endsection
