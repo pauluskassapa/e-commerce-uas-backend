@@ -80,7 +80,8 @@
                                     : asset(ltrim($product->image, '/')));
                         @endphp
 
-                        <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="80">
+                        <img class="product-thumb" src="{{ $imageUrl }}" alt="{{ $product->name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                        <span class="image-fallback">Gambar tidak tersedia</span>
                     @else
                         -
                     @endif

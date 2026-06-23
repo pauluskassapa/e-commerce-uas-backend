@@ -138,6 +138,37 @@ button {
     margin-top: 8px;
 }
 
+.product-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #dbe3ef;
+}
+
+.product-detail-image {
+    width: 220px;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #dbe3ef;
+}
+
+.image-fallback {
+    display: none;
+    color: #64748b;
+    background: #f8fafc;
+    border: 1px dashed #94a3b8;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.image-fallback-detail {
+    max-width: 220px;
+    text-align: center;
+}
+
 /* cart */
 
 .cart-title {

@@ -21,7 +21,8 @@
                     : asset(ltrim($product->image, '/')));
         @endphp
 
-        <img src="{{ $imageUrl }}" alt="{{ $product->name }}" width="200">
+        <img class="product-detail-image" src="{{ $imageUrl }}" alt="{{ $product->name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span class="image-fallback image-fallback-detail">Gambar tidak tersedia</span>
     @endif
 
     <h3>Rating Produk</h3>
