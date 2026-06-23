@@ -15,7 +15,7 @@
         <tr>
             <th>ID</th>
             <th>User</th>
-            <th>Cart</th>
+            <th>Order</th>
             <th>Method</th>
             <th>Amount</th>
             <th>Status</th>
@@ -27,11 +27,15 @@
             <tr>
                 <td>{{ $payment->id }}</td>
                 <td>{{ $payment->user?->name ?? '-' }}</td>
-                <td>{{ $payment->cart?->id ?? '-' }}</td>
+
+                {{-- DIUBAH: cart → order --}}
+                <td>#{{ $payment->order?->id ?? '-' }}</td>
+
                 <td>{{ $payment->method?->name ?? '-' }}</td>
                 <td>{{ $payment->amount }}</td>
                 <td>{{ $payment->status }}</td>
                 <td>{{ $payment->paid_at?->format('d/m/Y H:i') ?? '-' }}</td>
+
                 <td>
                     <a href="{{ route('payments.show', $payment) }}">
                         Detail
