@@ -85,6 +85,7 @@ $product = Product::create([
     'description' => 'Produk contoh untuk kategori baju.',
     'price' => 75000,
     'stock' => 25,
+    'image' => 'https://placehold.co/600x400/111827/ffffff?text=Kaos+Polos+Hitam',
 ]);
 
 Product::create([
@@ -94,6 +95,7 @@ Product::create([
     'description' => 'Produk contoh untuk kategori elektronik.',
     'price' => 350000,
     'stock' => 10,
+    'image' => 'https://placehold.co/600x400/1f2937/ffffff?text=Keyboard+Mechanical',
 ]);
 
 Product::create([
@@ -103,6 +105,7 @@ Product::create([
     'description' => 'Produk contoh untuk kategori makanan dan minuman.',
     'price' => 18000,
     'stock' => 50,
+    'image' => 'https://placehold.co/600x400/92400e/ffffff?text=Kopi+Susu+Botol',
 ]);
 
         $cart = Cart::create([
