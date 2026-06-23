@@ -28,7 +28,7 @@ class CartItemController extends Controller
         if ($item) {
             if ($item->quantity + 1 > $product->stock) {
                 return redirect()->back()
-                    ->with('error', 'Stock ' . $product->name . ' kurang. Sisa stock: ' . $product->stock);
+                    ->with('error', 'Stock ' . $product->name . ' kurang. Stok tinggal ' . $product->stock);
             }
 
             $item->increment('quantity');
@@ -59,7 +59,7 @@ class CartItemController extends Controller
         if ($item) {
             if ($item->quantity + 1 > $product->stock) {
                 return redirect()->back()
-                    ->with('error', 'Stock ' . $product->name . ' kurang. Sisa stock: ' . $product->stock);
+                    ->with('error', 'Stock ' . $product->name . ' kurang. Stok tinggal ' . $product->stock);
             }
 
             $item->increment('quantity');
@@ -83,9 +83,12 @@ class CartItemController extends Controller
         if ($item) {
             if ($item->quantity > 1) {
                 $item->decrement('quantity');
-            } else {
-                $item->delete();
             }
+             else {
+            return redirect()->back()
+                ->with('error', 'harus ada jumlah barangnya minimal 1');
+        }
+
         }
 
         return redirect()->back();
