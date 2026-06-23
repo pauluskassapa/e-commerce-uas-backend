@@ -28,21 +28,24 @@
                 @endforeach
             </select>
         </label><br>
-       <label>Harga
-    <input
-        type="text"
-        id="price_display"
-        value="{{ old('price') ? 'Rp ' . number_format(old('price'), 0, ',', '.') : '' }}"
-        placeholder="Rp 0"
-    >
+      <label>
 
-    <input
-        type="hidden"
-        id="price"
-        name="price"
-        value="{{ old('price') }}"
-    >
-</label>
+    Harga
+<input
+
+        id="price-display"
+
+        type="text"
+
+        value="{{ old('price') ? 'Rp ' . number_format(old('price'), 0, ',', '.') : '' }}"
+
+        placeholder="Rp {{ number_format($product->price, 0, ',', '.') }}"
+
+        inputmode="numeric"
+>
+<input id="price" type="hidden" name="price" value="{{ old('price') }}">
+</label><br>
+ 
         <label>Stok <input type="number" name="stock" value="{{ old('stock', $product->stock) }}"></label><br>
         <label>Gambar Produk</label>
         <label class="upload-box" for="product-image">
@@ -88,5 +91,24 @@
             preview.src = URL.createObjectURL(file);
             preview.style.display = 'block';
         }
+        function formatRupiah(value) {
+        const number = value.replace(/\D/g, '');
+
+        if (!number) {
+            return '';
+        }
+
+        return 'Rp ' + Number(number).toLocaleString('id-ID');
+    }
+
+    const priceDisplay = document.getElementById('price-display');
+    const priceInput = document.getElementById('price');
+
+    priceDisplay.addEventListener('input', function () {
+        const number = this.value.replace(/\D/g, '');
+
+        this.value = formatRupiah(this.value);
+        priceInput.value = number;
+    });
     </script>
 @endsection
