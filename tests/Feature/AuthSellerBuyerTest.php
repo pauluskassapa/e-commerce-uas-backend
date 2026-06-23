@@ -61,6 +61,24 @@ class AuthSellerBuyerTest extends TestCase
         ]);
     }
 
+    public function test_register_requires_phone_and_address(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'No Contact',
+            'username' => 'no_contact',
+            'email' => 'no-contact@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'seller',
+        ]);
+
+        $response->assertSessionHasErrors(['phone', 'address']);
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', [
+            'email' => 'no-contact@example.com',
+        ]);
+    }
+
     public function test_user_can_login_without_selecting_role(): void
     {
         User::create([

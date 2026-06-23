@@ -46,6 +46,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => $seller->id,
             'username' => 'demo_seller',
             'role' => 'seller',
+            'phone' => '089876543210',
+            'address' => 'Bandung',
         ]);
 
         $categories = collect([

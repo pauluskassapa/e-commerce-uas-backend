@@ -74,14 +74,14 @@
 
         <label>
             No HP
-            <input type="text" name="phone" value="{{ old('phone') }}">
+            <input type="text" name="phone" value="{{ old('phone') }}" required>
         </label>
         @error('phone') <p>{{ $message }}</p> @enderror
         <br>
 
         <label>
             Alamat
-            <textarea name="address">{{ old('address') }}</textarea>
+            <textarea name="address" required>{{ old('address') }}</textarea>
         </label>
         @error('address') <p>{{ $message }}</p> @enderror
         <br>

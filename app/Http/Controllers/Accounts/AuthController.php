@@ -25,8 +25,8 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', Rule::in(['buyer', 'seller'])],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'address' => ['nullable', 'string', 'max:1000'],
+            'phone' => ['required', 'string', 'max:30'],
+            'address' => ['required', 'string', 'max:1000'],
         ]);
 
         $user = User::create([
@@ -40,8 +40,8 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'username' => $validated['username'],
             'role' => $validated['role'],
-            'phone' => $validated['phone'] ?? null,
-            'address' => $validated['address'] ?? null,
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
         ]);
 
         Auth::login($user);
