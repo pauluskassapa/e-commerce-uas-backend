@@ -36,6 +36,8 @@ Route::middleware(['auth', 'buyer'])->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout');
 
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
     Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
 
     Route::post('/payments/{payment}/confirm', [PaymentController::class, 'confirm'])
