@@ -8,8 +8,6 @@ use App\Models\Category;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
-use App\Models\Review;
-use App\Models\ReviewReply;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -48,35 +46,64 @@ class DatabaseSeeder extends Seeder
             'user_id' => $seller->id,
             'username' => 'demo_seller',
             'role' => 'seller',
+            'phone' => '089876543210',
+            'address' => 'Bandung',
         ]);
 
-        $category = Category::create([
-            'name' => 'Elektronik',
-            'slug' => 'elektronik',
-            'description' => 'Kategori contoh untuk katalog produk.',
-        ]);
+        $categories = collect([
+    [
+        'name' => 'Baju',
+        'slug' => 'baju',
+        'description' => 'Kategori untuk produk pakaian.',
+    ],
+    [
+        'name' => 'Elektronik',
+        'slug' => 'elektronik',
+        'description' => 'Kategori untuk produk elektronik.',
+    ],
+    [
+        'name' => 'Makanan & Minuman',
+        'slug' => 'makanan-minuman',
+        'description' => 'Kategori untuk produk makanan dan minuman.',
+    ],
+    [
+        'name' => 'Aksesoris',
+        'slug' => 'aksesoris',
+        'description' => 'Kategori untuk aksesoris fashion dan gadget.',
+    ],
+    [
+        'name' => 'Peralatan Rumah',
+        'slug' => 'peralatan-rumah',
+        'description' => 'Kategori untuk kebutuhan rumah tangga.',
+    ],
+])->map(fn ($category) => Category::create($category));
 
-        $product = Product::create([
-            'category_id' => $category->id,
-            'name' => 'Keyboard Mechanical',
-            'slug' => 'keyboard-mechanical',
-            'description' => 'Produk contoh untuk scaffold catalog.',
-            'price' => 350000,
-            'stock' => 10,
-        ]);
+$product = Product::create([
+    'category_id' => $categories->firstWhere('slug', 'baju')->id,
+    'name' => 'Kaos Polos Hitam',
+    'slug' => 'kaos-polos-hitam',
+    'description' => 'Produk contoh untuk kategori baju.',
+    'price' => 75000,
+    'stock' => 25,
+]);
 
-        $review = Review::create([
-            'user_id' => $buyer->id,
-            'product_id' => $product->id,
-            'rating' => 5,
-            'comment' => 'Produk contoh sudah tampil.',
-        ]);
+Product::create([
+    'category_id' => $categories->firstWhere('slug', 'elektronik')->id,
+    'name' => 'Keyboard Mechanical',
+    'slug' => 'keyboard-mechanical',
+    'description' => 'Produk contoh untuk kategori elektronik.',
+    'price' => 350000,
+    'stock' => 10,
+]);
 
-        ReviewReply::create([
-            'review_id' => $review->id,
-            'user_id' => $seller->id,
-            'message' => 'Terima kasih atas review-nya.',
-        ]);
+Product::create([
+    'category_id' => $categories->firstWhere('slug', 'makanan-minuman')->id,
+    'name' => 'Kopi Susu Botol',
+    'slug' => 'kopi-susu-botol',
+    'description' => 'Produk contoh untuk kategori makanan dan minuman.',
+    'price' => 18000,
+    'stock' => 50,
+]);
 
         $cart = Cart::create([
             'user_id' => $buyer->id,

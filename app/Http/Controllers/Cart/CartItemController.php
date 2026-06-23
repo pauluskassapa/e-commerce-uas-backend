@@ -3,20 +3,122 @@
 namespace App\Http\Controllers\Cart;
 
 use App\Http\Controllers\Controller;
-use App\Models\CartItem;
-use Illuminate\View\View;
+use App\Models\Cart;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartItemController extends Controller
 {
-    public function index(): View
+    public function store(Product $product)
     {
-        return view('cart-items.index', [
-            'items' => CartItem::with(['cart.user', 'product'])->latest()->get(),
+        if ($product->stock < 1) {
+            return redirect()->back()
+                ->with('error', 'Stock ' . $product->name . ' kosong.');
+        }
+
+        $cart = Cart::firstOrCreate([
+            'user_id' => Auth::id(),
+            'status' => 'active',
         ]);
+
+        $item = $cart->items()
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($item) {
+            if ($item->quantity + 1 > $product->stock) {
+                return redirect()->back()
+                    ->with('error', 'Stock ' . $product->name . ' kurang. Sisa stock: ' . $product->stock);
+            }
+
+            $item->increment('quantity');
+        } else {
+            $cart->items()->create([
+                'product_id' => $product->id,
+                'quantity' => 1,
+                'price' => $product->price,
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', 'Produk berhasil ditambahkan');
     }
 
-    public function show(CartItem $cartItem): View
+    public function increase(Product $product)
     {
-        return view('cart-items.show', compact('cartItem'));
+        $cart = $this->activeCart();
+
+        if (!$cart) {
+            return redirect()->back();
+        }
+
+        $item = $cart->items()
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($item) {
+            if ($item->quantity + 1 > $product->stock) {
+                return redirect()->back()
+                    ->with('error', 'Stock ' . $product->name . ' kurang. Sisa stock: ' . $product->stock);
+            }
+
+            $item->increment('quantity');
+        }
+
+        return redirect()->back();
+    }
+
+    public function decrease(Product $product)
+    {
+        $cart = $this->activeCart();
+
+        if (!$cart) {
+            return redirect()->back();
+        }
+
+        $item = $cart->items()
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($item) {
+            if ($item->quantity > 1) {
+                $item->decrement('quantity');
+            } else {
+                $item->delete();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    public function destroy(Product $product)
+    {
+        $cart = $this->activeCart();
+
+        if (!$cart) {
+            return redirect()->back()
+                ->with('error', 'Cart tidak ditemukan');
+        }
+
+        $item = $cart->items()
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($item) {
+            $item->delete();
+
+            return redirect()->back()
+                ->with('success', 'Produk berhasil dihapus');
+        }
+
+        return redirect()->back()
+            ->with('error', 'Produk tidak ditemukan');
+    }
+
+    private function activeCart(): ?Cart
+    {
+        return Cart::where('user_id', Auth::id())
+            ->where('status', 'active')
+            ->first();
     }
 }
