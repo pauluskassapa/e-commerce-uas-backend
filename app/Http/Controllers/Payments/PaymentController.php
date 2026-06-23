@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
 {
@@ -47,7 +48,7 @@ class PaymentController extends Controller
             true
         )->get();
 
-        $carts = Cart::all();
+        $carts = Cart::where('user_id', auth()->id())->get();
 
         return view(
             'payments.create',
@@ -61,7 +62,10 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'cart_id' => 'nullable|exists:carts,id',
+            'cart_id' => [
+                'nullable',
+                Rule::exists('carts', 'id')->where('user_id', auth()->id()),
+            ],
             'payment_method_id' => 'required|exists:payment_methods,id',
             'amount' => 'required|numeric|min:1',
         ]);

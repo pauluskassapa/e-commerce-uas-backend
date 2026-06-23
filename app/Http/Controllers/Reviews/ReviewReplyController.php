@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ReviewReply;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -23,6 +24,17 @@ class ReviewReplyController extends Controller
         $reviewReply->load(['review', 'user']);
 
         return view('review-replies.show', compact('reviewReply'));
+    }
+
+    public function edit(Request $request, ReviewReply $reviewReply): View
+    {
+        if ($request->user()->id !== $reviewReply->user_id) {
+            abort(403, 'User hanya bisa mengubah balasan review miliknya sendiri.');
+        }
+
+        $reviewReply->load(['review.product', 'review.user']);
+
+        return view('review-replies.edit', compact('reviewReply'));
     }
 
     public function apiIndex(Request $request): JsonResponse
@@ -55,7 +67,7 @@ class ReviewReplyController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'review_id' => ['required', 'integer', 'exists:reviews,id'],
@@ -66,9 +78,7 @@ class ReviewReplyController extends Controller
         $user = $this->resolveUser($request, $validated['user_id'] ?? null);
 
         if ($user->role !== 'seller') {
-            return response()->json([
-                'message' => 'Hanya seller yang bisa membalas review.',
-            ], 403);
+            return $this->failedResponse($request, 'Hanya seller yang bisa membalas review.', 403);
         }
 
         $reply = ReviewReply::create([
@@ -77,13 +87,19 @@ class ReviewReplyController extends Controller
             'message' => $validated['message'],
         ]);
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('reviews.show', $reply->review_id)
+                ->with('success', 'Balasan review berhasil ditambahkan.');
+        }
+
         return response()->json([
             'message' => 'Balasan review berhasil ditambahkan.',
             'data' => $reply->load(['review', 'user']),
         ], 201);
     }
 
-    public function update(Request $request, ReviewReply $reviewReply): JsonResponse
+    public function update(Request $request, ReviewReply $reviewReply): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'user_id' => $this->userIdRules($request),
@@ -93,20 +109,22 @@ class ReviewReplyController extends Controller
         $user = $this->resolveUser($request, $validated['user_id'] ?? null);
 
         if ($user->role !== 'seller') {
-            return response()->json([
-                'message' => 'Hanya seller yang bisa mengatur balasan review.',
-            ], 403);
+            return $this->failedResponse($request, 'Hanya seller yang bisa mengatur balasan review.', 403);
         }
 
         if ($user->id !== $reviewReply->user_id) {
-            return response()->json([
-                'message' => 'User hanya bisa mengubah balasan review miliknya sendiri.',
-            ], 403);
+            return $this->failedResponse($request, 'User hanya bisa mengubah balasan review miliknya sendiri.', 403);
         }
 
         $reviewReply->update([
             'message' => $validated['message'] ?? $reviewReply->message,
         ]);
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('reviews.show', $reviewReply->review_id)
+                ->with('success', 'Balasan review berhasil diperbarui.');
+        }
 
         return response()->json([
             'message' => 'Balasan review berhasil diperbarui.',
@@ -157,5 +175,14 @@ class ReviewReplyController extends Controller
         }
 
         return User::findOrFail($userId);
+    }
+
+    private function failedResponse(Request $request, string $message, int $status): JsonResponse|RedirectResponse
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], $status);
+        }
+
+        return back()->withErrors(['reply' => $message])->withInput();
     }
 }

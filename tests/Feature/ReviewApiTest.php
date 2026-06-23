@@ -130,10 +130,76 @@ class ReviewApiTest extends TestCase
         ])->assertCreated()->assertJsonPath('data.user_id', $seller->id);
     }
 
-    private function createProduct(): Product
+    public function test_buyer_can_open_web_review_form_for_paid_products(): void
+    {
+        $buyer = User::factory()->create(['role' => 'buyer']);
+        $paidProduct = $this->createProduct('Produk Sudah Dibayar');
+        $unpaidProduct = $this->createProduct('Produk Belum Dibayar');
+        $this->markProductAsPaid($buyer, $paidProduct);
+
+        $this->actingAs($buyer)
+            ->get('/reviews/create')
+            ->assertOk()
+            ->assertSee('Produk Sudah Dibayar')
+            ->assertDontSee('Produk Belum Dibayar');
+
+        $this->actingAs($buyer)
+            ->post('/reviews', [
+                'product_id' => $paidProduct->id,
+                'rating' => 5,
+                'comment' => 'Review dari web.',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $buyer->id,
+            'product_id' => $paidProduct->id,
+            'comment' => 'Review dari web.',
+        ]);
+
+        $this->assertDatabaseMissing('reviews', [
+            'user_id' => $buyer->id,
+            'product_id' => $unpaidProduct->id,
+        ]);
+    }
+
+    public function test_seller_can_create_and_update_reply_from_web(): void
+    {
+        $buyer = User::factory()->create(['role' => 'buyer']);
+        $seller = User::factory()->create(['role' => 'seller']);
+        $product = $this->createProduct();
+        $review = Review::create([
+            'user_id' => $buyer->id,
+            'product_id' => $product->id,
+            'rating' => 5,
+            'comment' => 'Produknya bagus.',
+        ]);
+
+        $this->actingAs($seller)
+            ->post('/review-replies', [
+                'review_id' => $review->id,
+                'message' => 'Terima kasih.',
+            ])
+            ->assertRedirect(route('reviews.show', $review));
+
+        $reply = $review->replies()->firstOrFail();
+
+        $this->actingAs($seller)
+            ->put("/review-replies/{$reply->id}", [
+                'message' => 'Terima kasih, semoga cocok.',
+            ])
+            ->assertRedirect(route('reviews.show', $review));
+
+        $this->assertDatabaseHas('review_replies', [
+            'id' => $reply->id,
+            'message' => 'Terima kasih, semoga cocok.',
+        ]);
+    }
+
+    private function createProduct(string $name = 'Produk Tes'): Product
     {
         return Product::create([
-            'name' => 'Produk Tes',
+            'name' => $name,
             'slug' => 'produk-tes-' . uniqid(),
             'price' => 100000,
             'stock' => 10,
