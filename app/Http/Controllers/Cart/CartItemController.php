@@ -13,6 +13,7 @@ class CartItemController extends Controller
     {
         $cart = Cart::firstOrCreate([
             'user_id' => Auth::id(),
+            'status' => 'active',
         ]);
 
         $item = $cart->items()
@@ -35,7 +36,7 @@ class CartItemController extends Controller
 
     public function increase(Product $product)
     {
-        $cart = Cart::where('user_id', Auth::id())->first();
+        $cart = $this->activeCart();
 
         if (!$cart) {
             return redirect()->back();
@@ -54,7 +55,7 @@ class CartItemController extends Controller
 
     public function decrease(Product $product)
     {
-        $cart = Cart::where('user_id', Auth::id())->first();
+        $cart = $this->activeCart();
 
         if (!$cart) {
             return redirect()->back();
@@ -77,7 +78,7 @@ class CartItemController extends Controller
 
     public function destroy(Product $product)
     {
-        $cart = Cart::where('user_id', Auth::id())->first();
+        $cart = $this->activeCart();
 
         if (!$cart) {
             return redirect()->back()
@@ -97,5 +98,12 @@ class CartItemController extends Controller
 
         return redirect()->back()
             ->with('error', 'Produk tidak ditemukan');
+    }
+
+    private function activeCart(): ?Cart
+    {
+        return Cart::where('user_id', Auth::id())
+            ->where('status', 'active')
+            ->first();
     }
 }

@@ -13,6 +13,7 @@ class CartController extends Controller
     {
         $cart = Cart::with(['items.product'])
             ->where('user_id', Auth::id())
+            ->where('status', 'active')
             ->first();
 
         return view('carts.index', compact('cart'));
@@ -25,7 +26,9 @@ class CartController extends Controller
 
     public function destroy()
     {
-        $cart = Cart::where('user_id', Auth::id())->first();
+        $cart = Cart::where('user_id', Auth::id())
+            ->where('status', 'active')
+            ->first();
 
         if ($cart) {
             $cart->items()->delete();
