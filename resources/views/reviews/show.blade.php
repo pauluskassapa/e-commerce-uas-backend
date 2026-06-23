@@ -11,10 +11,20 @@
                 <p class="review-kicker">Detail review</p>
                 <h2 id="review-detail-title">{{ $review->product?->name ?? 'Produk' }}</h2>
             </div>
-            <span class="review-rating" aria-label="Rating {{ $review->rating }} dari 5">
-                {{ $review->rating }}/5
-            </span>
+            <div class="review-heading-actions">
+                @auth
+                    @if (auth()->id() === $review->user_id)
+                        <a class="review-action review-action-secondary" href="{{ route('reviews.edit', $review) }}">Edit Review</a>
+                    @endif
+                @endauth
+
+                <span class="review-rating" aria-label="Rating {{ $review->rating }} dari 5">
+                    {{ $review->rating }}/5
+                </span>
+            </div>
         </div>
+
+        @include('reviews.partials.feedback')
 
         <div class="review-detail-grid">
             <div class="review-detail-item">
@@ -43,10 +53,31 @@
                         <span class="review-seller-label">Seller</span>
                     </span>
                     <p>{{ $reply->message }}</p>
+                    @auth
+                        @if (auth()->id() === $reply->user_id)
+                            <a class="review-action review-action-secondary review-inline-action" href="{{ route('review-replies.edit', $reply) }}">Edit Balasan</a>
+                        @endif
+                    @endauth
                 </div>
             @empty
                 <p class="review-comment-cell">Belum ada balasan seller.</p>
             @endforelse
+
+            @auth
+                @if (auth()->user()->role === 'seller')
+                    <form class="review-form review-form-spaced" method="post" action="{{ route('review-replies.store') }}">
+                        @csrf
+                        <input type="hidden" name="review_id" value="{{ $review->id }}">
+
+                        <label>
+                            Balasan Seller
+                            <textarea name="message" rows="4" maxlength="1000" required placeholder="Tulis balasan untuk review pembeli.">{{ old('message') }}</textarea>
+                        </label>
+
+                        <button class="review-action" type="submit">Kirim Balasan</button>
+                    </form>
+                @endif
+            @endauth
         </section>
     </article>
 @endsection

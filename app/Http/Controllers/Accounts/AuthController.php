@@ -25,8 +25,8 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', Rule::in(['buyer', 'seller'])],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'address' => ['nullable', 'string', 'max:1000'],
+            'phone' => ['required', 'string', 'max:30'],
+            'address' => ['required', 'string', 'max:1000'],
         ]);
 
         $user = User::create([
@@ -40,8 +40,8 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'username' => $validated['username'],
             'role' => $validated['role'],
-            'phone' => $validated['phone'] ?? null,
-            'address' => $validated['address'] ?? null,
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
         ]);
 
         Auth::login($user);
@@ -62,22 +62,21 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
-            'role' => ['required', Rule::in(['buyer', 'seller'])],
         ]);
 
         $remember = $request->boolean('remember');
 
         if (! Auth::attempt($credentials, $remember)) {
             return back()
-                ->withErrors(['email' => 'Email, password, atau role tidak sesuai.'])
-                ->onlyInput('email', 'role');
+                ->withErrors(['email' => 'Email atau password tidak sesuai.'])
+                ->onlyInput('email');
         }
 
         $request->session()->regenerate();
 
         return redirect()
             ->intended(route('dashboard'))
-            ->with('success', 'Login sebagai ' . $credentials['role'] . ' berhasil.');
+            ->with('success', 'Login sebagai ' . $request->user()->role . ' berhasil.');
     }
 
     public function logout(Request $request): RedirectResponse

@@ -8,8 +8,6 @@ use App\Models\Category;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
-use App\Models\Review;
-use App\Models\ReviewReply;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -48,6 +46,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => $seller->id,
             'username' => 'demo_seller',
             'role' => 'seller',
+            'phone' => '089876543210',
+            'address' => 'Bandung',
         ]);
 
         $categories = collect([
@@ -104,19 +104,6 @@ Product::create([
     'price' => 18000,
     'stock' => 50,
 ]);
-
-        $review = Review::create([
-            'user_id' => $buyer->id,
-            'product_id' => $product->id,
-            'rating' => 5,
-            'comment' => 'Produk contoh sudah tampil.',
-        ]);
-
-        ReviewReply::create([
-            'review_id' => $review->id,
-            'user_id' => $seller->id,
-            'message' => 'Terima kasih atas review-nya.',
-        ]);
 
         $cart = Cart::create([
             'user_id' => $buyer->id,
